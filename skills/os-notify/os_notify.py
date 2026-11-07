@@ -6,6 +6,10 @@ Falls back to stdout if no notification system is available.
 
 Notifications are fire-and-forget: the call returns immediately after handing the
 notification to the OS (it does not block for the display duration).
+
+Exit codes: 0 = a native notification was shown; 3 = no native notifier was
+available, so it only printed to stdout (callers can treat 3 as "not delivered");
+1 = bad arguments.
 """
 
 import sys
@@ -145,7 +149,9 @@ def main():
             print("Error: --title and --message are required (or use --test)", file=sys.stderr)
             sys.exit(1)
 
-    notify(title, message, args.level, args.duration)
+    delivered = notify(title, message, args.level, args.duration)
+    # 0 = 네이티브 알림 표시, 3 = 알림 수단이 없어 stdout 폴백만 함(호출자가 "미전달"로 구분).
+    sys.exit(0 if delivered else 3)
 
 
 if __name__ == "__main__":

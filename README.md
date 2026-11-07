@@ -67,6 +67,8 @@ To try it locally before publishing:
 | `skills/memcheck/` | Read-only check of free physical memory (+ top Java processes) before starting a server — cross-platform (WT-10 gate) |
 | `skills/safe-delete/` | Move to the OS trash instead of permanent delete, with protected-folder/home/root guards (GL-28) — cross-platform |
 | `skills/os-notify/` | Fire a native OS notification (Windows/macOS/Linux) with stdout fallback — the primitive the patrol/alert skills call |
+| `skills/patrol-notify/` | Back-off notifier for "waiting on a human" items (AG-15): reads a status JSON, notifies via os-notify, tracks per-item back-off state |
+| `skills/qa-inbox/` | Read-only view of a delegate's (`qa-master`) open inter-session requests from the ledger, sorted blocked-first then oldest (AG-15) |
 | `docs/overview-en.md` | English overview + the project case studies (scenario verification, stall prevention, bottleneck removal…) |
 | `NOTICE.md` | Anonymization & reference-copy disclosure |
 
@@ -92,8 +94,8 @@ The bundled skills use only the Python standard library and were rewritten to be
 설치: `/plugin marketplace add neisii/harness-naroo` → `/plugin install ai-dlc-harness@harness-naroo`
 
 - `rules/` : 12단계 정본 규칙(한글)
-- `skills/` : 설치하면 실제 동작하는 범용 스킬 8개(dlc-gate, session-wake, session-stall-check, claude-update-check, worktree, memcheck, safe-delete, os-notify)
-  - `worktree`·`memcheck`·`safe-delete`·`os-notify`는 Windows 전용 PowerShell을 **macOS/Linux/Windows 공용 Python**으로 포팅한 것
+- `skills/` : 설치하면 실제 동작하는 범용 스킬 10개(dlc-gate, session-wake, session-stall-check, claude-update-check, worktree, memcheck, safe-delete, os-notify, patrol-notify, qa-inbox)
+  - `worktree`·`memcheck`·`safe-delete`·`os-notify`·`patrol-notify`·`qa-inbox`는 Windows 전용 PowerShell을 **macOS/Linux/Windows 공용 Python**으로 포팅한 것
 - `docs/overview-en.md` : 영문 개요 + 사례
 - `NOTICE.md` : 익명화 고지
 
