@@ -64,6 +64,9 @@ To try it locally before publishing:
 | `skills/session-stall-check/` | Detect whether a background session is silently stalled on input (via transcript mtime) |
 | `skills/claude-update-check/` | Check for a new Claude Code version and record an approve/defer/reject decision (never installs) |
 | `skills/worktree/` | Create a work branch + sparse worktree per the WT rules (no-upstream branch, remote behind-check, sparse-checkout) — cross-platform (macOS/Linux/Windows) |
+| `skills/memcheck/` | Read-only check of free physical memory (+ top Java processes) before starting a server — cross-platform (WT-10 gate) |
+| `skills/safe-delete/` | Move to the OS trash instead of permanent delete, with protected-folder/home/root guards (GL-28) — cross-platform |
+| `skills/os-notify/` | Fire a native OS notification (Windows/macOS/Linux) with stdout fallback — the primitive the patrol/alert skills call |
 | `docs/overview-en.md` | English overview + the project case studies (scenario verification, stall prevention, bottleneck removal…) |
 | `NOTICE.md` | Anonymization & reference-copy disclosure |
 
@@ -89,8 +92,8 @@ The bundled skills use only the Python standard library and were rewritten to be
 설치: `/plugin marketplace add neisii/harness-naroo` → `/plugin install ai-dlc-harness@harness-naroo`
 
 - `rules/` : 12단계 정본 규칙(한글)
-- `skills/` : 설치하면 실제 동작하는 범용 스킬(dlc-gate, session-wake, session-stall-check, claude-update-check, worktree)
-  - `worktree`는 WT-03이 지정하던 Windows `new-worktree.ps1`을 **macOS/Linux/Windows 공용 Python**으로 포팅한 것
+- `skills/` : 설치하면 실제 동작하는 범용 스킬 8개(dlc-gate, session-wake, session-stall-check, claude-update-check, worktree, memcheck, safe-delete, os-notify)
+  - `worktree`·`memcheck`·`safe-delete`·`os-notify`는 Windows 전용 PowerShell을 **macOS/Linux/Windows 공용 Python**으로 포팅한 것
 - `docs/overview-en.md` : 영문 개요 + 사례
 - `NOTICE.md` : 익명화 고지
 
