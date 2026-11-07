@@ -1,0 +1,17 @@
+{
+  "name": "harness-naroo",
+  "owner": {
+    "name": "neisii",
+    "url": "https://github.com/neisii"
+  },
+  "description": "neisii's AI-DLC harness — a reusable Claude Code harness distilled from a real SI project.",
+  "plugins": [
+    {
+      "name": "ai-dlc-harness",
+      "source": ".",
+      "description": "12-step rule system with human gates, role sessions, and reusable skills for AI-driven development.",
+      "category": "workflow",
+      "tags": ["ai-dlc", "rules", "human-gate", "skills"]
+    }
+  ]
+}

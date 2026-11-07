@@ -1,0 +1,30 @@
+---
+name: session-wake
+description: 이름으로 지정한 백그라운드(bg) Claude Code 세션을 복사본 없이 깨운다. "세션 깨워", "<세션명> 재개", "이미 떠 있는지 확인하고 깨워" 요청에 쓴다. 이미 떠 있으면 resume하지 않고, 꺼져 있으면 전체 sessionId로 resume하며, `--resume`이 만든 복사본은 `claude stop`으로 즉시 정리한다.
+---
+
+# session-wake — 세션 이름으로 복사본 없이 깨우기
+
+번들 스크립트: `${CLAUDE_PLUGIN_ROOT}/skills/session-wake/session_wake.py` (Python 3, 표준 라이브러리만 사용)
+
+## 사용법
+```
+python ${CLAUDE_PLUGIN_ROOT}/skills/session-wake/session_wake.py <세션명> [--dry-run]
+```
+`--dry-run`은 판단까지만 하고 resume을 실행하지 않는다.
+
+## 동작
+1. `claude agents --all --json`(배열)에서 이름이 같은 레코드를 모으고 `startedAt`이 가장 큰 것을 고른다.
+2. 같은 이름 레코드 중 `pid`가 있는 것이 있으면 resume하지 않고 `[이미 떠 있음]`을 출력한다. 이때는 그 세션에 SendMessage로 바로 지시한다. `state` 값은 보지 않는다.
+3. `pid`가 없으면 그 레코드의 **전체 sessionId**(UUID)와 `cwd`로 `claude --bg --resume <전체 sessionId>`를 실행한다. 짧은 id는 쓰지 않으며, UUID가 아니거나 `cwd`가 없으면 중단한다.
+4. 출력에 `started a copy as <newId>`가 있으면 원본이 실제로는 살아 있었다는 뜻이다. 그 복사본을 즉시 `claude stop <newId>`로 종료하고, 원본 이름으로 SendMessage하라고 안내한다. 복사본에는 보내지 않는다.
+5. `note: woke session ...`만 있고 복사본 note가 없으면 정상 재개다. 같은 id·이름으로 복귀하며 기본 시작 프롬프트와 `--disallowedTools`는 다시 넣지 않는다(최초 기동 옵션이 자동으로 재적용된다).
+6. 마지막에 같은 이름 레코드를 다시 조회해 건수를 보고한다. 1건이 아니면 경고한다.
+
+프로세스를 직접 종료하지 않는다(`claude stop`만 쓴다). 이름이 아예 없으면 `[없음]`을 출력하고 종료 코드 3을 돌려준다. 이때는 `claude --bg`로 새 세션을 띄운다.
+
+종료 코드: 0 정상(이미 떠 있음·깨움·복사본 정리), 2 사용법·입력 오류, 3 이름 없음, 4 재개 실패.
+
+## 알아둘 점
+- 깨운 직후 몇 초 동안은 `pid`가 조회에 나타나지 않아 마지막 줄이 `pid` 없이 나올 수 있다. 다시 호출하면 `[이미 떠 있음]`으로 보인다.
+- 종료한 복사본 레코드가 목록에 남아 같은 이름이 2건으로 보일 수 있다. 그러면 SendMessage 전에 이름이 유일하게 해석되는지 확인한다.
