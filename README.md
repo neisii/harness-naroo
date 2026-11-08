@@ -69,6 +69,7 @@ To try it locally before publishing:
 | `skills/os-notify/` | Fire a native OS notification (Windows/macOS/Linux) with stdout fallback — the primitive the patrol/alert skills call |
 | `skills/patrol-notify/` | Back-off notifier for "waiting on a human" items (AG-15): reads a status JSON, notifies via os-notify, tracks per-item back-off state |
 | `skills/qa-inbox/` | Read-only view of a delegate's (`qa-master`) open inter-session requests from the ledger, sorted blocked-first then oldest (AG-15) |
+| `skills/pending-status-check/` | Read-only aggregation of the whole AG-15 waiting ledger into text or JSON (severity by deadline multiple, hold/deferred, rule-propagation, 3T pre-check) — the status-JSON producer that `patrol-notify` consumes |
 | `docs/overview-en.md` | English overview + the project case studies (scenario verification, stall prevention, bottleneck removal…) |
 | `NOTICE.md` | Anonymization & reference-copy disclosure |
 
