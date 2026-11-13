@@ -29,7 +29,7 @@ import sys
 TOOLS_DIR = os.path.dirname(os.path.abspath(__file__))
 NOTES_DIR = os.path.dirname(TOOLS_DIR)
 DEFAULT_DICT = os.path.join(NOTES_DIR, '번역투-교정사전.md')
-SKIP_NAMES = {'번역투-교정사전.md', '쉬운-글쓰기-기준.md', '08-서술규칙.md'}
+SKIP_NAMES = {'번역투-교정사전.md', '쉬운-글쓰기-기준.md', '08-서술규칙.md', 'HANDOFF.md'}
 
 CAT_TERM, CAT_EMOJI, CAT_POV = '번역투', '이모지', '시점'
 
