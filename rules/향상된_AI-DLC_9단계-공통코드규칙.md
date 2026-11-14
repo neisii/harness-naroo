@@ -12,14 +12,14 @@
 | # | 출처 | 위치·내용 | 쓰임 |
 |---|---|---|---|
 | 1 | TOBE 공통코드 DB | 시스템 공통코드 `sch_c.tbl_049`(그룹코드 예: `SYS001`~`SYS012`), 업무 공통코드 `sch_d.tbl_051`(그룹코드 예: `CD049`·`CD050`·`CD051`~`CD052`·`CD041`·`CD042`·`CD003` 등, 코드마다 참조문자값 `rfrnc_chvl_1`~`5` 보유 가능) | 현재 코드값 |
-| 2 | developmentguide | `{본인 경로}\IdeaProjects\<접두사>_docs\developmentguide\11-화면에서-공통코드-연동하기.md` | 프론트 연동 방식(`CommonCode.load()`, `SelectComponent`/`RadioGroupComponent`/`CheckboxGroupComponent`, buy·sell BFF 중계 구조 등). 코드값보다 "어떻게 조회·바인딩하는가"의 표준 근거 |
-| 3 | 구현참고자료(ASIS) | `{본인 경로}\IdeaProjects\구현참고자료\`(예: `1. 분석\PRJ_ASIS_공통코드_분석.md`) | TOBE DB에 아직 없는 코드의 유래·의미·과거 코드값 |
+| 2 | developmentguide | `<워크스페이스>\<접두사>_docs\developmentguide\11-화면에서-공통코드-연동하기.md` | 프론트 연동 방식(`CommonCode.load()`, `SelectComponent`/`RadioGroupComponent`/`CheckboxGroupComponent`, buy·sell BFF 중계 구조 등). 코드값보다 "어떻게 조회·바인딩하는가"의 표준 근거 |
+| 3 | 구현참고자료(ASIS) | `<워크스페이스>\구현참고자료\`(예: `1. 분석\PRJ_ASIS_공통코드_분석.md`) | TOBE DB에 아직 없는 코드의 유래·의미·과거 코드값 |
 | 4 | js/java 하드코딩 | 화면 JS나 백엔드 Java에 상수·배열 등으로 임시 정의한 값 | DB에 정식 등록되지 않은 코드 |
 
 TOBE DB 조회 방법:
 
 - 공통코드 관리 화면, 위 테이블 직접 조회, 또는 범용 API `POST /api/admin/commoncode/searchByGroups`(프론트에서는 `CommonCode.load()`로 호출).
-- **최신 정보 CSV(내부망 dev)도 항상 함께 확인한다:** `{본인 경로}\IdeaProjects\project_docs\docs\공통코드\공통코드_내부망_dev_*.csv`
+- **최신 정보 CSV(내부망 dev)도 항상 함께 확인한다:** `<공유문서 루트>\공통코드\공통코드_내부망_dev_*.csv`
   - 접두어별로 나뉘어 있다(`startwith_CT`, `startwith_EE`, `startwith_MA`, `startwith_DL`, `startwith_TC`, `not_startwith`). 한 파일에 없으면 `*` 전체를 검색한다.
   - 컬럼은 `group_cd, group_cd_nm, group_cd_expln, dtl_cd, dtl_cd_nm`이고 참조문자값(`rfrnc_chvl_1~5`)은 없다. 참조문자값이 필요하면 DB를 직접 조회한다.
 
@@ -42,7 +42,7 @@ AI가 임의로 하나만 골라 제시하지 않는다.
 - 선택지마다 다음을 넣는다.
   - **출처:** TOBE DB / developmentguide / 구현참고자료(ASIS) / js·java 하드코딩 중 어디인지
   - **상세 정보:** 그룹코드, 코드값, 코드명, 참조문자값 등 조회된 그대로
-  - **사용 위치:** 필요한 화면ID와 화면 내 영역(예: 어느 화면의 "검수상태" 셀렉트인지)
+  - **사용 위치:** 필요한 작업ID와 화면 내 영역(예: 어느 화면의 "검수상태" 셀렉트인지)
 
 ### CC-05 · 못 찾으면 새로 만들지 않는다
 
