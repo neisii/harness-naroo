@@ -69,7 +69,7 @@
 - **T4:** 의존성 DAG(작업 순서).
 - **T5:** MECE 감수 역할 상시화.
 - (완료) 린터 → **플러그인 스킬 승격**: `skills/seosul-lint/`(구현 정본) + design-notes `tools/seosul_linter.py`는 shim. 구현 1곳, 드리프트 없음.
-- 가역성 분류표(07) → 실제 rule/skill. **(다음 라운드 유력)**
+- (정본화 완료, design-notes) 가역성 분류표(07): 결과 4·기준 4·거부권·STEP1/2·**판정 근거 JSON 규격(AG-15 호환·독립)**까지 다듬음. **published `rules/` 이관은 하네스 구성 시(08 관례), 라우터 스크립트화는 규칙이 실제로 한 번 돌아 굳은 뒤.**
 - (완료) README 영문·한글에 design-notes 포인터 추가.
 
 ## 10. 주의·함정
