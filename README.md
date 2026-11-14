@@ -92,6 +92,7 @@ This harness ate its own dog food — on a real delivery, and on its own design 
 | `skills/qa-inbox/` | Read-only view of a delegate's (`qa-master`) open inter-session requests from the ledger, sorted blocked-first then oldest (AG-15) |
 | `skills/pending-status-check/` | Read-only aggregation of the whole AG-15 waiting ledger into text or JSON (severity by deadline multiple, hold/deferred, rule-propagation, 3T pre-check) — the status-JSON producer that `patrol-notify` consumes |
 | `skills/seosul-lint/` | Read-only Korean prose linter: flags translationese/overstated terms, emoji, and 2nd-person ("당신") in Markdown, with suggested replacements. Dictionary-driven — swap the dict for your own rules. Promoted from the `design-notes/` writing-rule tooling |
+| `skills/reversibility-gate/` | Decide "do it alone vs stop and ask" from four criteria (reversible? clear? scope? business rule?) → autonomous / audit-after / approve-before / hold. **Veto-first, never a point sum.** Records the self-assessed evidence as AG-15-compatible JSON. The runnable engine behind design rule 07 (try `examples/reversibility_demo.py`) |
 | `docs/overview-en.md` | English overview + the project case studies (scenario verification, stall prevention, bottleneck removal…) |
 | `design-notes/` | Design rationale for the harness's **next version** — positioning, the human-bottleneck & flow-control problems, branch/ledger strategy, reversibility gate, and writing rules, tied together by an operating-loop diagram (Korean; 7 Mermaid diagrams). Work-in-progress notes. |
 | `NOTICE.md` | Anonymization & reference-copy disclosure |
@@ -123,9 +124,10 @@ The bundled skills use only the Python standard library and were rewritten to be
 설치: `/plugin marketplace add neisii/harness-naroo` → `/plugin install ai-dlc-harness@harness-naroo`
 
 - `rules/` : 12단계 정본 규칙(한글)
-- `skills/` : 설치하면 실제 동작하는 범용 스킬 11개(dlc-gate, session-wake, session-stall-check, claude-update-check, worktree, memcheck, safe-delete, os-notify, patrol-notify, qa-inbox, seosul-lint)
+- `skills/` : 설치하면 실제 동작하는 범용 스킬 13개(dlc-gate, session-wake, session-stall-check, claude-update-check, worktree, memcheck, safe-delete, os-notify, patrol-notify, qa-inbox, pending-status-check, seosul-lint, reversibility-gate)
   - `worktree`·`memcheck`·`safe-delete`·`os-notify`·`patrol-notify`·`qa-inbox`는 Windows 전용 PowerShell을 **macOS/Linux/Windows 공용 Python**으로 포팅한 것
   - `seosul-lint`는 `design-notes/`의 서술 규칙 린터를 스킬로 승격한 것(번역투·이모지·2인칭 점검, 사전 교체형)
+  - `reversibility-gate`는 가역성 분류표(07)를 실행하는 라우터 — 기준 4개로 자율/사후검수/사전승인/보류를 정하고(거부권 우선) 근거를 JSON으로 남긴다. 데모: `examples/reversibility_demo.py`
 - `docs/overview-en.md` : 영문 개요 + 사례
 - `design-notes/` : 하네스 **다음 버전 설계 근거**(포지셔닝·사람 병목·브랜치/장부·가역성 게이트·서술 규칙 + 작동 루프). 한글, 다이어그램 7개. 진행 중 메모.
 - `NOTICE.md` : 익명화 고지

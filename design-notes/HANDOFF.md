@@ -5,7 +5,7 @@
 ## 1. 한눈에
 
 - **레포:** github.com/neisii/harness-naroo (공개, `main`). 최신 커밋 `f12e378`.
-- **두 층:** (a) 공개 플러그인 — 스킬 12개(+seosul-lint) + `rules/`(S 차세대 하네스 정본). (b) `design-notes/` — 하네스 **다음 버전** 설계 방법론.
+- **두 층:** (a) 공개 플러그인 — 스킬 13개(+seosul-lint, +reversibility-gate) + `rules/`(S 차세대 하네스 정본). (b) `design-notes/` — 하네스 **다음 버전** 설계 방법론.
 - 이 핸드오프는 **(b) design-notes** 작업을 잇기 위한 것.
 - **사용자:** 백가희(neisii). 출처: S 차세대 **폐쇄망 SI**(익명화). 설계 노트에서 1인칭 "내" = 사용자.
 - **첫 고객·한 방(2026-11-14):** SI·한국어 개발자 중 "개별 에이전트 성공이 아니라 **전체 시스템 정합성**을 확인해야 한다"를 믿고 실행하는 사람. 정본 01, 메모리 [[target-customer-and-hook]].
@@ -78,7 +78,9 @@
 - **T4:** 의존성 DAG(작업 순서).
 - **T5:** MECE 감수 역할 상시화.
 - (완료) 린터 → **플러그인 스킬 승격**: `skills/seosul-lint/`(구현 정본) + design-notes `tools/seosul_linter.py`는 shim. 구현 1곳, 드리프트 없음.
-- (정본화 완료, design-notes) 가역성 분류표(07): 결과 4·기준 4·거부권·STEP1/2·**판정 근거 JSON 규격(AG-15 호환·독립)**까지 다듬음. **published `rules/` 이관은 하네스 구성 시(08 관례), 라우터 스크립트화는 규칙이 실제로 한 번 돌아 굳은 뒤.**
+- (정본화 완료, design-notes) 가역성 분류표(07): 결과 4·기준 4·거부권·STEP1/2·판정 근거 JSON 규격. **published `rules/` 이관은 하네스 구성 시(08 관례).**
+- (완료) **07 라우터 실제 승격** → `skills/reversibility-gate/`(구현 정본: route+decide+판정근거 JSON+확신도 보수조정). `examples/reversibility_demo.py`는 그 route를 import(드리프트 없음). plugin validate 통과.
+- (완료) **03·09 정본 승격** — 사람 병목(parked·배치·사전소화 계약) / coordinator(큐=AG-15 확장·장부 락·Workflow 연동·실패 정책).
 - (완료) README 영문·한글에 design-notes 포인터 추가.
 - (완료) **첫 고객·한 방 결정** → 01 "누구를 위한 것인가" + 메모리. README 첫 화면 리프레임.
 - (완료) **5분 입구:** `examples/reversibility_demo.py`(1부 07 실행 조각) + `QUICKSTART.md`(2부) + diagrams. README "Try it"가 가리킴.
