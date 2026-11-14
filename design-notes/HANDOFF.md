@@ -16,7 +16,7 @@
 
 1. `design-notes/00-인덱스.md` — 전체 지도 + **작동 루프** 다이어그램.
 2. 이 `HANDOFF.md`.
-3. `design-notes/논제-backlog.md` — 열린 과제(T2~T5).
+3. `design-notes/논제-backlog.md` — 열린 과제(T2~T6).
 4. `design-notes/08-서술규칙.md` — 글 쓰는 규칙(필수, 4절에 요약).
 
 ## 3. 문서 지도

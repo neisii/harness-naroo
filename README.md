@@ -113,7 +113,7 @@ Ordered by what carries the promise — the coherence core first, project-specif
 | Path | What |
 |---|---|
 | `docs/overview-en.md` | English overview + the project case studies (scenario verification, stall prevention, bottleneck removal…) |
-| `design-notes/` | Design rationale for the harness's **next version** — positioning, the human-bottleneck & flow-control problems, branch/ledger strategy, reversibility gate, and writing rules, tied together by an operating-loop diagram (Korean; 7 Mermaid diagrams). Work-in-progress notes. |
+| `design-notes/` | Design rationale for the harness's **next version** — positioning, the human-bottleneck & flow-control problems, branch/ledger strategy, reversibility gate, and writing rules, tied together by an operating-loop diagram (Korean; 9 Mermaid diagrams). Work-in-progress notes. |
 | `NOTICE.md` | Anonymization & reference-copy disclosure |
 
 The bundled skills use only the Python standard library and were rewritten to be portable.
@@ -148,7 +148,7 @@ The bundled skills use only the Python standard library and were rewritten to be
   - `seosul-lint`는 `design-notes/`의 서술 규칙 린터를 스킬로 승격한 것(번역투·이모지·2인칭 점검, 사전 교체형)
   - `reversibility-gate`는 가역성 분류표(07)를 실행하는 라우터 — 기준 4개로 자율/사후검수/사전승인/보류를 정하고(거부권 우선) 근거를 JSON으로 남긴다. 데모: `examples/reversibility_demo.py`
 - `docs/overview-en.md` : 영문 개요 + 사례
-- `design-notes/` : 하네스 **다음 버전 설계 근거**(포지셔닝·사람 병목·브랜치/장부·가역성 게이트·서술 규칙 + 작동 루프). 한글, 다이어그램 7개. 진행 중 메모.
+- `design-notes/` : 하네스 **다음 버전 설계 근거**(포지셔닝·사람 병목·브랜치/장부·가역성 게이트·서술 규칙 + 작동 루프). 한글, 다이어그램 9개. 진행 중 메모.
 - `NOTICE.md` : 익명화 고지
 
 결합도 높은 파이프라인(시나리오 검증, 문서 통합 등)은 `docs/`에 방법론으로만 소개했습니다.
