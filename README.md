@@ -1,7 +1,10 @@
 # AI-DLC Harness (naroo)
 
-A reusable **Claude Code harness** for AI-driven development on real SI / enterprise projects —
-a 12-step rule system with **human gates**, **role sessions**, and a few portable skills.
+**An agent reports "done." But whether its result still fits the whole process and system — who checks that?**
+
+A Claude Code harness that checks an agent's output against **whole-system coherence**, not just whether the one task "succeeded" — through human gates, re-verification, and a reversibility check. A 12-step rule system distilled from a real SI delivery.
+
+*For SI developers — and, naturally, people who work in Korean — who hold that an agent succeeding at its task isn't the finish line. Keeping the whole system coherent is, and it has to be checkable.*
 
 > Distilled and anonymized from a real next-gen public-procurement build (2026). On that project this
 > harness helped deliver **34 screens about a month ahead of schedule**, grew to **13 rules · 27 skills ·
@@ -54,6 +57,22 @@ To try it locally before publishing:
 /plugin install ai-dlc-harness@harness-naroo
 ```
 
+## Try it
+
+The point of this harness — catching when an agent's result breaks whole-system coherence — shows up **inside your own project**: install it, and `dlc-gate` stops you at the real decision points (before implementing, before committing, when something gets marked "verified"). That is an honest description, not a canned demo — a 5-minute showcase is still being built.
+
+The one piece you can feel standalone right now is the Korean-prose linter:
+
+```sh
+python3 skills/seosul-lint/seosul_lint.py path/to/your/korean/docs
+```
+
+It flags translationese, emoji, and 2nd-person in Korean Markdown, with suggested replacements — no install needed (standard-library Python).
+
+## If the dog food was edible, leave a star
+
+This harness ate its own dog food — on a real delivery, and on its own design notes (the linter above runs on them). If the idea lands — an agent harness that checks the **whole**, not just the part — a star helps the next SI developer find it.
+
 ## What's inside
 
 | Path | What |
@@ -89,6 +108,11 @@ The bundled skills use only the Python standard library and were rewritten to be
   shipped as runnable code.
 
 ## 한국어 요약
+
+> **에이전트는 "완료"라고 한다. 그게 전체 흐름·시스템과 맞물리는지는 누가 확인하나?**
+> 개별 작업의 성공이 아니라, 그 결과가 **전체 시스템의 정합성**을 깨지 않는지 확인하는 Claude Code 하네스 — 게이트·재검증·가역성 판정으로. 실제 SI 납품에서 추려냈습니다.
+>
+> *표적: 에이전트가 작업에 성공한 게 끝이 아니라 전체 정합성을 지키는 게 끝이고, 그게 확인 가능해야 한다고 믿고 실행하는 SI·한국어 개발자.*
 
 실제 SI 프로젝트(2026, 공공 조달 차세대)에서 운영하던 Claude Code 하네스를 **익명화해 공개**한 것입니다.
 핵심은 **12단계 규칙 체계 + Human Gate(사람/`qa-master` 승인) + 역할 세션**으로 AI를 "규율 있는 팀원"처럼
