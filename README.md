@@ -77,22 +77,41 @@ This harness ate its own dog food — on a real delivery, and on its own design 
 
 ## What's inside
 
+Ordered by what carries the promise — the coherence core first, project-specific plumbing last.
+
+**The coherence core** — keep the whole intact, and make it checkable:
+
 | Path | What |
 |---|---|
-| `rules/` | The 12-step canonical rule documents (Korean, 정본) + the `00` summary index |
+| `rules/` | The 12-step canonical rule documents (Korean, 정본) + the `00` summary index — including "verified only means *actually* verified" and the re-verification steps |
 | `skills/dlc-gate/` | Points you to the right canonical rule *at the moment you act* (gate, commit, verify…) |
-| `skills/session-wake/` | Wake a named background session by name, without creating a duplicate |
+| `skills/reversibility-gate/` | Decide "do it alone vs stop and ask" from four criteria (reversible? clear? scope? business rule?) → autonomous / audit-after / approve-before / hold. **Veto-first, never a point sum.** Records the self-assessed evidence as AG-15-compatible JSON. The runnable engine behind design rule 07 (try `examples/reversibility_demo.py`) |
+
+**Keeping the human un-bottlenecked** — async review of what agents did (rule 03 · AG-15):
+
+| Path | What |
+|---|---|
+| `skills/qa-inbox/` | Read-only view of a delegate's (`qa-master`) open inter-session requests from the ledger, sorted blocked-first then oldest (AG-15) |
+| `skills/pending-status-check/` | Read-only aggregation of the whole AG-15 waiting ledger into text or JSON (severity by deadline multiple, hold/deferred, rule-propagation, 3T pre-check) — the status-JSON producer that `patrol-notify` consumes |
+| `skills/patrol-notify/` | Back-off notifier for "waiting on a human" items (AG-15): reads a status JSON, notifies via os-notify, tracks per-item back-off state |
 | `skills/session-stall-check/` | Detect whether a background session is silently stalled on input (via transcript mtime) |
-| `skills/claude-update-check/` | Check for a new Claude Code version and record an approve/defer/reject decision (never installs) |
+| `skills/session-wake/` | Wake a named background session by name, without creating a duplicate |
+| `skills/os-notify/` | Fire a native OS notification (Windows/macOS/Linux) with stdout fallback — the primitive the patrol/alert skills call |
+
+**Utilities & reference** — standalone or project-specific; adapt to your own setup:
+
+| Path | What |
+|---|---|
+| `skills/seosul-lint/` | Read-only Korean prose linter: flags translationese/overstated terms, emoji, and 2nd-person ("당신") in Markdown, with suggested replacements. Dictionary-driven — swap the dict for your own rules. Promoted from the `design-notes/` writing-rule tooling |
 | `skills/worktree/` | Create a work branch + sparse worktree per the WT rules (no-upstream branch, remote behind-check, sparse-checkout) — cross-platform (macOS/Linux/Windows) |
 | `skills/memcheck/` | Read-only check of free physical memory (+ top Java processes) before starting a server — cross-platform (WT-10 gate) |
 | `skills/safe-delete/` | Move to the OS trash instead of permanent delete, with protected-folder/home/root guards (GL-28) — cross-platform |
-| `skills/os-notify/` | Fire a native OS notification (Windows/macOS/Linux) with stdout fallback — the primitive the patrol/alert skills call |
-| `skills/patrol-notify/` | Back-off notifier for "waiting on a human" items (AG-15): reads a status JSON, notifies via os-notify, tracks per-item back-off state |
-| `skills/qa-inbox/` | Read-only view of a delegate's (`qa-master`) open inter-session requests from the ledger, sorted blocked-first then oldest (AG-15) |
-| `skills/pending-status-check/` | Read-only aggregation of the whole AG-15 waiting ledger into text or JSON (severity by deadline multiple, hold/deferred, rule-propagation, 3T pre-check) — the status-JSON producer that `patrol-notify` consumes |
-| `skills/seosul-lint/` | Read-only Korean prose linter: flags translationese/overstated terms, emoji, and 2nd-person ("당신") in Markdown, with suggested replacements. Dictionary-driven — swap the dict for your own rules. Promoted from the `design-notes/` writing-rule tooling |
-| `skills/reversibility-gate/` | Decide "do it alone vs stop and ask" from four criteria (reversible? clear? scope? business rule?) → autonomous / audit-after / approve-before / hold. **Veto-first, never a point sum.** Records the self-assessed evidence as AG-15-compatible JSON. The runnable engine behind design rule 07 (try `examples/reversibility_demo.py`) |
+| `skills/claude-update-check/` | Check for a new Claude Code version and record an approve/defer/reject decision (never installs) |
+
+**Docs & notes:**
+
+| Path | What |
+|---|---|
 | `docs/overview-en.md` | English overview + the project case studies (scenario verification, stall prevention, bottleneck removal…) |
 | `design-notes/` | Design rationale for the harness's **next version** — positioning, the human-bottleneck & flow-control problems, branch/ledger strategy, reversibility gate, and writing rules, tied together by an operating-loop diagram (Korean; 7 Mermaid diagrams). Work-in-progress notes. |
 | `NOTICE.md` | Anonymization & reference-copy disclosure |
