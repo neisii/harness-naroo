@@ -20,7 +20,7 @@
 
 - **설계 01~09:** 01 포지셔닝(Orca·Jev) · 02 멀티에이전트 빠진 조각 · 03 사람 병목·비동기 검수 · 04 브랜치·이중 장부 · 05 검증·통합·릴리스 결정 · 06 두 하네스(핵심+환경값) · 07 가역성 분류표 · 08 서술 규칙(정본) · 09 coordinator
 - **방법 문서:** `쉬운-글쓰기-기준.md`(how-to) · `번역투-교정사전.md`(T2 사전 16개) · `논제-backlog.md`(T1~T5)
-- `diagrams/` — Mermaid SVG 7개. `tools/seosul_linter.py` — 서술 린터.
+- `diagrams/` — Mermaid SVG 7개. `tools/seosul_linter.py` — 서술 린터(구현은 `skills/seosul-lint/`로 승격, 여긴 shim).
 
 ## 4. 서술 규칙 (글 쓸 때 필수 — 정본 08)
 
@@ -64,12 +64,12 @@
 
 ## 9. 열린 과제
 
-- **T2:** 번역투 교정 스킬화 — `서술 린터`가 그 첫 조각(지금은 design-notes 도구).
+- **T2:** 번역투 교정 스킬화 — `서술 린터`를 공개 스킬 `skills/seosul-lint/`로 **승격 완료**. 다음 조각은 사전 확장·rule 결합.
 - **T3:** coordinator 세부(할 일 큐 스키마·락·Workflow 연동·재시도) — 문서 09 초안 있음.
 - **T4:** 의존성 DAG(작업 순서).
 - **T5:** MECE 감수 역할 상시화.
-- 린터 → **플러그인 스킬 승격**.
-- 가역성 분류표(07) → 실제 rule/skill.
+- (완료) 린터 → **플러그인 스킬 승격**: `skills/seosul-lint/`(구현 정본) + design-notes `tools/seosul_linter.py`는 shim. 구현 1곳, 드리프트 없음.
+- 가역성 분류표(07) → 실제 rule/skill. **(다음 라운드 유력)**
 - (완료) README 영문·한글에 design-notes 포인터 추가.
 
 ## 10. 주의·함정
