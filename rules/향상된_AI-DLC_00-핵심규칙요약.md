@@ -78,7 +78,7 @@
 | 타 프로젝트 소스·DB를 직접 열람하지 않는다(공용 내부망 개발DB 읽기 전용 SELECT는 사전 승인되어 예외). | AG-08 |
 | 다른 Agent에게 구현을 위임하지 않는다. 정보 교환만 한다. | AG-09 |
 | 산출물 폴더(`docs/<팀구분>/...`)와 추적 제외 목록의 파일을 커밋하지 않는다. 소스 프로젝트의 미추적 `docs/` 파일(`docs/api/` 등)은 로컬 유지하고, `project_docs` 직속은 커밋 대상이 아니다(`project_docs\docs\{admin,buy,contract,member,sell}`는 각 `prj_*\docs`로 연결된 junction이라 같은 폴더이며 위 `docs/` 규칙을 따른다). | AR-01, CS-09 |
-| 원격에서 바뀐 설정 파일(yaml·properties)은 원격을 기본값으로 하고, 로컬 구동에 필요한 옵션만 fetch 뒤 다시 적용한다(NPROTECT·ANYID는 RL-12 방식만). | CS-09, RL-12 |
+| 원격에서 바뀐 설정 파일(yaml·properties)은 원격을 기본값으로 하고, 로컬 구동에 필요한 옵션만 fetch 뒤 다시 적용한다(조직 고유 보안 토글, 예: NPROTECT·ANYID, 은 RL-12 방식만). | CS-09, RL-12 |
 | 직접 구현하지 않는 프로젝트(member·settlement·catalog)의 `.metrics/`는 커밋하지 않고 버린다. | WT-13 |
 | `git stash push -u`를 pathspec 없이 쓰지 않는다. | CS-07 |
 | 수동 `git worktree add`를 쓰지 않고 `new-worktree.ps1`을 쓴다. 새 브랜치에 업스트림을 설정하지 않는다. | WT-03, WT-04 |
