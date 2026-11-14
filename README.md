@@ -59,15 +59,17 @@ To try it locally before publishing:
 
 ## Try it
 
-The point of this harness — catching when an agent's result breaks whole-system coherence — shows up **inside your own project**: install it, and `dlc-gate` stops you at the real decision points (before implementing, before committing, when something gets marked "verified"). That is an honest description, not a canned demo — a 5-minute showcase is still being built.
-
-The one piece you can feel standalone right now is the Korean-prose linter:
+See a rule decide, in one command — a runnable slice of the reversibility rule that routes four real situations to *do it / report after / stop and ask / hold*:
 
 ```sh
-python3 skills/seosul-lint/seosul_lint.py path/to/your/korean/docs
+python3 examples/reversibility_demo.py
 ```
 
-It flags translationese, emoji, and 2nd-person in Korean Markdown, with suggested replacements — no install needed (standard-library Python).
+Watch case **[3]**: an action that's reversible, clear, and looks like "your call" still gets stopped — because it's a business decision. That one-glance veto is the whole point: not "did the task succeed," but "does this keep the whole coherent." Full ~5-minute walk-through (this, plus the check catching its own author): **[QUICKSTART.md](./QUICKSTART.md)**.
+
+The core value shows up **inside your own project**: once installed, `dlc-gate` stops you at the real decision points (before implementing, before committing, when something is marked "verified") — honest, not a canned demo.
+
+Also standalone right now — the Korean-prose linter: `python3 skills/seosul-lint/seosul_lint.py path/to/your/korean/docs` (flags translationese, emoji, 2nd-person; standard-library Python).
 
 ## If the dog food was edible, leave a star
 
