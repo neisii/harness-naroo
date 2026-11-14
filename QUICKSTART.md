@@ -72,7 +72,35 @@ flowchart TD
   RB -->|아니오| C
 ```
 
-> This is one runnable slice of rule 07, not the whole harness. The full router (confidence, recorded evidence for after-the-fact audit) is deliberately deferred — see [`design-notes/07-가역성분류표.md`](./design-notes/07-가역성분류표.md).
+### ...and it records *why* — so "checkable" is output, not a promise
+
+The gate doesn't just pick a letter; it leaves an **auditable record**. Run case [3] through the skill with `--json`:
+
+```sh
+python3 skills/reversibility-gate/reversibility_gate.py \
+  --task "할인율 15% 반영" --reversibility 가역 --rollback 있음 \
+  --clarity 명확 --business 사업결정 --scope 외부공유 \
+  --json --session demo --why-business "할인율은 기획이 정할 사업 규칙"
+```
+
+```json
+{
+  "종류": "가역성판정", "작업": "할인율 15% 반영", "결과": "C",
+  "판정시각": "2026-11-14 17:33", "세션": "demo",
+  "기준": {
+    "가역성":   { "값": "가역", "롤백경로": "있음", "근거": "" },
+    "기반정보": { "값": "명확", "근거": "" },
+    "영향범위": { "값": "외부공유", "판정방식": "자가", "근거": "" },
+    "업무규칙": { "값": "사업결정", "근거": "할인율은 기획이 정할 사업 규칙" }
+  },
+  "확신도": "보통", "거부권발동": "④", "보수조정": false,
+  "결정근거": "④ '사람이 정할' 사업 결정 (거부권) — 되돌릴 수 있어도 혼자 못 정한다."
+}
+```
+
+Later, a human (or `qa-master`) reads these records and catches "wait — that one was mine to decide," **not by re-reading the diff but from the gate's own evidence.** That is "keep the whole coherent, *and make it checkable*" as a real artifact — the core promise, running.
+
+> A runnable slice of rule 07. **Real now:** the routing, the low-confidence bump, and the recorded evidence above. **Still deferred:** auto-detecting ③ scope from the worktree (self-assessed for now), and moving 07 into the published rule canon (at harness-build time). See [`design-notes/07-가역성분류표.md`](./design-notes/07-가역성분류표.md).
 
 ---
 
