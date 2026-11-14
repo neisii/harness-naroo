@@ -33,11 +33,15 @@ python3 examples/reversibility_demo.py
 [4] 화면설계서에 '거기 그거 처리'로만 적힌 항목 구현
     가역성=가역 · 기반정보=모호 · 영향범위=외부·공유 · 업무규칙=해당없음
     → D 보류·질의   ② 뭘 하란 건지 모른다 (거부권) — 옆으로 치우고 다음 일부터.
+
+[5] 공유 스테이징 DB에 샘플 데이터 일괄 삽입 (되돌리는 스크립트는 아직 없음)
+    가역성=가역 · 기반정보=명확 · 영향범위=외부·공유 · 업무규칙=해당없음
+    → C 사전 승인   외부·공유인데 되돌릴 방법이 없다 → 보수적으로 멈추고 물어본다.
 ```
 
 **Watch case [3].** It is reversible, clear, and looks like "your call" — add up the points and you'd say "safe, just do it." But setting a discount rate is a **business decision**, so a single veto stops it. That is the whole idea: not "did the task succeed," but "does this decision keep the whole coherent." **Points can't outvote a veto.**
 
-How the four land (top box = the three vetoes; only what clears them drops to the ③ adjust step):
+How they land (top box = the three vetoes; only what clears them drops to the ③ adjust step):
 
 ```mermaid
 flowchart TD
@@ -49,11 +53,11 @@ flowchart TD
   end
   subgraph STEP2["STEP 2 — ③ 영향범위로 조절"]
     Q3{"③ 내 구역 밖<br/>(외부·공유)?"}
-    ADJ{"② 명확 & ① 가역?"}
+    RB{"되돌릴 방법<br/>등록됐나?"}
   end
   A["A 자율 실행<br/>← [1] 오타 수정"]
   B["B 사후 검수 + 알림<br/>← [2] 공용 유틸 로그"]
-  C["C 사전 승인<br/>← [3] 할인율 15% · 거부권"]
+  C["C 사전 승인<br/>← [3] 할인율·거부권 · [5] 롤백 없음"]
   D["D 보류·질의<br/>← [4] '거기 그거'"]
   START --> Q2
   Q2 -->|예 · 거부권| D
@@ -63,9 +67,9 @@ flowchart TD
   Q1 -->|예 · 거부권| C
   Q1 -->|아니오| Q3
   Q3 -->|아니오| A
-  Q3 -->|예| ADJ
-  ADJ -->|예| B
-  ADJ -->|주의 2개 이상| C
+  Q3 -->|예| RB
+  RB -->|예| B
+  RB -->|아니오| C
 ```
 
 > This is one runnable slice of rule 07, not the whole harness. The full router (confidence, recorded evidence for after-the-fact audit) is deliberately deferred — see [`design-notes/07-가역성분류표.md`](./design-notes/07-가역성분류표.md).

@@ -62,6 +62,11 @@ CASES = [
         "reversible": "가역", "rollback": "있음", "clarity": "모호",
         "business": "해당없음", "scope": "외부공유",
     },
+    {
+        "title": "공유 스테이징 DB에 샘플 데이터 일괄 삽입 (되돌리는 스크립트는 아직 없음)",
+        "reversible": "가역", "rollback": "없음", "clarity": "명확",
+        "business": "해당없음", "scope": "외부공유",
+    },
 ]
 
 _SCOPE_KO = {"내구역": "내 구역", "외부공유": "외부·공유"}
