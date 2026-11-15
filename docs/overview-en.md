@@ -111,3 +111,11 @@ code**, because they were tightly coupled to the project's database, document sy
 
 If you want to rebuild any of these for your own stack, the rules in `rules/` and the cases above are the
 blueprint. Contributions that generalize one of them are welcome.
+
+## Data handling
+
+The plugin runs locally and sends no personal or project data off-platform. The one outbound network call is
+`claude-update-check`, which reads the latest Claude Code version and changelog from GitHub
+(`raw.githubusercontent.com`) and the npm registry — version info only, no user data. Some rules instruct
+reading a local, read-only DB credential (`~/.claude/secrets/devdb_readonly.env`, AG-08) that is never printed,
+logged, or transmitted; no secrets are bundled (see `NOTICE.md`).
