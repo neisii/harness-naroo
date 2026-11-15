@@ -15,7 +15,7 @@ the same placeholder everywhere:
 | Screen / program / process IDs | `screen-001`, `UI-X001`, `PG-XX0001`… |
 | Service names | `admin-portal`, `buyer-portal`, `supplier-portal`, `contract-service`, `catalog-service`, `member-service`, `settlement-service`, `integration-hub` |
 | Business URLs | `/portal/path-001`… |
-| Internal IPs / DB names / network | `<내부 IP>`, `<개발 DB 이름>`, `devnet` |
+| Internal IPs / DB names / network | `<내부 IP>`, `<개발 DB 이름>`, `<내부 네트워크>` |
 | Project / team prefixes | `PRJ`, `prj_*`, `team2` |
 | Home directory | `{본인 경로}` (placeholder for your `~` / `C:\Users\<you>`) |
 | Other people's names / accounts | `작업자A`, `accountA`… |
