@@ -128,6 +128,11 @@ The bundled skills use only the Python standard library and were rewritten to be
 - This is a **curated core**, not the full internal harness. Deeply project-coupled pipelines
   (E2E scenario verification, doc consolidation, API-spec generation) are described as methodology rather than
   shipped as runnable code.
+- **Data handling:** The plugin runs locally and sends no personal or project data off-platform. The one
+  outbound network call is `claude-update-check`, which reads the latest Claude Code version and changelog from
+  GitHub (`raw.githubusercontent.com`) and the npm registry — version info only, no user data. Some rules
+  instruct reading a local, read-only DB credential (`~/.claude/secrets/devdb_readonly.env`, AG-08) that is
+  never printed, logged, or transmitted; no secrets are bundled (see `NOTICE.md`).
 
 ## 한국어 요약
 
@@ -152,6 +157,8 @@ The bundled skills use only the Python standard library and were rewritten to be
 - `NOTICE.md` : 익명화 고지
 
 결합도 높은 파이프라인(시나리오 검증, 문서 통합 등)은 `docs/`에 방법론으로만 소개했습니다.
+
+**데이터:** 플러그인은 로컬에서 동작하며 개인·프로젝트 데이터를 외부로 보내지 않습니다. 유일한 외부 호출은 `claude-update-check`가 Claude Code 최신 버전·체인지로그를 GitHub·npm에서 읽는 것뿐입니다(버전 정보만, 사용자 데이터 전송 없음). 일부 규칙은 로컬의 읽기 전용 DB 자격증명(`~/.claude/secrets/devdb_readonly.env`, AG-08)을 읽지만 출력·기록·전송하지 않으며, 비밀은 동봉돼 있지 않습니다(`NOTICE.md`).
 
 ## License & credits
 
