@@ -50,8 +50,8 @@ def main():
         code, why, _veto = route(rev, rb, clar, biz, scope)
         print()
         print("[%d] %s" % (i, title))
-        print("    가역성=%s · 기반정보=%s · 영향범위=%s · 업무규칙=%s"
-              % (rev, clar, _SCOPE_KO[scope], biz))
+        print("    가역성=%s · 롤백=%s · 기반정보=%s · 영향범위=%s · 업무규칙=%s"
+              % (rev, rb, clar, _SCOPE_KO[scope], biz))
         print("    → %s   %s" % (OUTCOMES[code], why))
     print()
     print("=" * 64)

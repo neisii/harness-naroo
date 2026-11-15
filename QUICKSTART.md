@@ -11,7 +11,7 @@ This harness checks whether an agent's result keeps the **whole** coherent — n
 
 ## Part 1 — Run it: "do it alone, or stop and ask?"
 
-A runnable slice of the reversibility rule ([07](./design-notes/07-가역성분류표.md)). It takes four everyday situations and routes each to one of four outcomes — **A** do it / **B** do it, then report / **C** stop and get approval / **D** hold, it's unclear.
+A runnable slice of the reversibility rule ([07](./design-notes/07-가역성분류표.md)). It takes five everyday situations and routes each to one of four outcomes — **A** do it / **B** do it, then report / **C** stop and get approval / **D** hold, it's unclear.
 
 ```sh
 python3 examples/reversibility_demo.py
@@ -19,23 +19,23 @@ python3 examples/reversibility_demo.py
 
 ```
 [1] 내 feature 브랜치에서 변수 오타 수정
-    가역성=가역 · 기반정보=명확 · 영향범위=내 구역 · 업무규칙=해당없음
+    가역성=가역 · 롤백=있음 · 기반정보=명확 · 영향범위=내 구역 · 업무규칙=해당없음
     → A 자율 실행   되돌릴 수 있고, 확실하고, 내 구역. 혼자 한다.
 
 [2] 공용 유틸에 디버그 로그 한 줄 추가
-    가역성=가역 · 기반정보=명확 · 영향범위=외부·공유 · 업무규칙=해당없음
+    가역성=가역 · 롤백=있음 · 기반정보=명확 · 영향범위=외부·공유 · 업무규칙=해당없음
     → B 사후 검수 + 알림   외부·공유지만 되돌릴 수 있고 명확 → 하고 나서 알린다.
 
 [3] 할인율을 15%로 코드에 반영
-    가역성=가역 · 기반정보=명확 · 영향범위=외부·공유 · 업무규칙=사업결정
+    가역성=가역 · 롤백=있음 · 기반정보=명확 · 영향범위=외부·공유 · 업무규칙=사업결정
     → C 사전 승인   ④ '사람이 정할' 사업 결정 (거부권) — 되돌릴 수 있어도 혼자 못 정한다.
 
 [4] 화면설계서에 '거기 그거 처리'로만 적힌 항목 구현
-    가역성=가역 · 기반정보=모호 · 영향범위=외부·공유 · 업무규칙=해당없음
+    가역성=가역 · 롤백=있음 · 기반정보=모호 · 영향범위=외부·공유 · 업무규칙=해당없음
     → D 보류·질의   ② 뭘 하란 건지 모른다 (거부권) — 옆으로 치우고 다음 일부터.
 
 [5] 공유 스테이징 DB에 샘플 데이터 일괄 삽입 (되돌리는 스크립트는 아직 없음)
-    가역성=가역 · 기반정보=명확 · 영향범위=외부·공유 · 업무규칙=해당없음
+    가역성=가역 · 롤백=없음 · 기반정보=명확 · 영향범위=외부·공유 · 업무규칙=해당없음
     → C 사전 승인   외부·공유인데 되돌릴 방법이 없다 → 보수적으로 멈추고 물어본다.
 ```
 
@@ -148,6 +148,6 @@ If the dog food was edible, a star helps the next SI developer find it.
 
 ## 한국어
 
-- **1부 — 돌려보기:** `python3 examples/reversibility_demo.py` — 가역성 규칙(07)이 상황 4개를 "혼자 함(A) / 하고 알림(B) / 멈추고 승인(C) / 보류(D)"로 판정한다. **[3]이 핵심** — 가역·명확·내 일처럼 보여도 '할인율'은 사업 결정이라 거부권으로 멈춘다. 점수로 못 덮는다.
+- **1부 — 돌려보기:** `python3 examples/reversibility_demo.py` — 가역성 규칙(07)이 상황 5개를 "혼자 함(A) / 하고 알림(B) / 멈추고 승인(C) / 보류(D)"로 판정한다. **[3]이 핵심** — 가역·명확·내 일처럼 보여도 '할인율'은 사업 결정이라 거부권으로 멈춘다. 점수로 못 덮는다.
 - **2부 — 보기:** `python3 skills/seosul-lint/seosul_lint.py design-notes/` — 규칙을 만든 사람이 놓친 번역투를 그 규칙의 린터가 잡는다. 규칙 만든 사람조차 규칙에 걸린다.
 - 둘 다 **한 조각**이지 하네스 전체의 5분 요약이 아니다. 전체는 네 실제 프로젝트에서 게이트가 제때 멈춰 세울 때 드러난다.
