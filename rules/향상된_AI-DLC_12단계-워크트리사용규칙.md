@@ -47,7 +47,7 @@ WT-01 면제 대상을 제외하고, 어떤 작업이든(화면 구현에 국한
 - 스크립트는 저장소 로컬 설정으로 `core.longpaths=true`를 켠다(WT-06).
 - 수동으로 `git worktree add`를 치지 않는다(sparse·env가 빠진다).
   - 예외: 읽기 전용 확인용 임시 detach 워크트리(`git worktree add --detach`, 예: API 명세 생성)는 수동으로 만들 수 있다. 커밋하지 않고 끝나면 즉시 `git worktree remove`로 지우며(GL-28·WT-14), 구현·수정 작업에는 쓰지 않는다. 이름은 짧게 한다(예: `t1`). 긴 이름은 Windows 260자 경로 제한에 걸려 체크아웃이 일부 실패할 수 있다(실제 사례 2026-10-28: `apispec-tmp-20261028`에서 긴 클래스명 소스 파일 미체크아웃, `t1`로 재생성해 해결, api-gen-master 보고).
-- 배경(bg) developer 세션은 하네스 격리 없이 기동한다(전역 설정 `worktree.bgIsolation`이 `"none"`). 하네스가 `worktree-<랜덤이름>`으로 자동 격리한 세션을 발견하면 작업을 시작하지 않고 qa-master에게 보고한다.
+- 배경(bg) developer 세션을 띄우기 전에, **프로젝트 설정(`.claude/settings.json`)에 `worktree.bgIsolation`을 `"none"`으로 넣는다**(전역이 아닌 프로젝트별 — 하네스를 안 쓰는 저장소까지 가드가 풀리지 않도록). 이 값이 없으면 기본값 `"worktree"`가 bg 세션의 로컬 체크아웃(docs 원본 경로 포함) 쓰기를 막아, 세션을 `worktree-<랜덤이름>`으로 자동 격리한다. 그렇게 자동 격리된 세션을 발견하면 작업을 시작하지 않고 qa-master에게 보고한다.
 - 워크트리는 이 절의 `new-worktree.ps1`로만 만들고 `EnterWorktree` 도구로 만들거나 들어가지 않는다. 하네스 격리가 걸리면 docs 원본 경로 쓰기와 `new-worktree.ps1` 실행이 막힌다.
 - 가드에 막혀도 Bash heredoc 등으로 우회하지 않고 qa-master에게 보고한다(2단계 RL-12).
 - 아래는 `new-worktree.ps1`이 내부에서 수행하는 순서이며 직접 실행하지 않는다. 순서가 중요하다: `git worktree add --no-checkout` → sparse 설정 → `git checkout`. sparse 설정 전에 checkout하면 파일이 전부 펼쳐졌다 지워져 상태가 꼬인다.
