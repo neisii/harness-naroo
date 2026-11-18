@@ -142,7 +142,7 @@
 
 **현재 진행(2026-11-18):**
 - **0.2.0 미푸시** — `327dbf0`(dict27) · `3c1388b`(dict28) · `d9847b4`(CLAUDE.md 신설) · `6bc4541`(린터 skip) + 이 핸드오프 커밋. `git push origin 0.2.0`로 origin보다 앞선 것 전부 올린다(pre-push 시크릿 게이트 통과 확인, `--no-verify` 금지).
-- **스케일 개밥 진행 중**(status-relay-rebuild, 사용자 운영): 워커 3개 동시(shutdown-sse·checker-shutdown·ci-readme, 옵션 B=본 폴더 루트). 관측: 게이트웨이 동시 처리 ✓, **막힌 워커는 폴링해야 보임**(이벤트만으론 안 보임), 동시 검증 병목·유휴 한계는 아직 미관측. 대화 기록은 사용자가 전달. 소견은 문서 10 D-5·부록 B에 누적.
+- **스케일 개밥 진행 중**(status-relay-rebuild, 사용자 운영): 워커 3개 동시(shutdown-sse·checker-shutdown·ci-readme, 옵션 B=본 폴더 루트). 관측: 게이트웨이 동시 처리 ✓, **막힌 워커는 폴링해야 보임**(이벤트만으론 안 보임), 동시 검증 병목·유휴 한계는 아직 미관측. 대화 기록은 사용자가 전달. 가이드·소견은 문서 10 부록 E(청사진 단계 1차 소견까지 기록; 구현·커밋 구간 기록 대기).
 
 1. 00-인덱스 + 이 핸드오프 + backlog + 01(첫 고객) + QUICKSTART 읽기.
 2. 린터(`design-notes/`) + `python3 examples/reversibility_demo.py` 한 번 돌려 상태 확인.
