@@ -11,7 +11,7 @@
   python3 design-notes/tools/seosul_linter.py --selftest
 
 - 사전: design-notes/번역투-교정사전.md (정본). 스킬 쪽 사전은 이걸 떠 담은 배포용 사본이다.
-- 제외: 사전 + 쉬운-글쓰기-기준.md · 08-서술규칙.md · HANDOFF.md (서술 규칙 정본·사전류).
+- 제외: 사전 + 쉬운-글쓰기-기준.md · 08-서술규칙.md · HANDOFF.md · CLAUDE.md (서술 규칙 정본·사전류; CLAUDE.md는 '자주 새는 목록'에 금칙어를 예시로 담음).
 """
 import importlib.util
 import os
@@ -31,7 +31,7 @@ spec.loader.exec_module(mod)
 
 inject = [
     '--dict', os.path.join(NOTES_DIR, '번역투-교정사전.md'),
-    '--skip', '쉬운-글쓰기-기준.md,08-서술규칙.md,HANDOFF.md',
+    '--skip', '쉬운-글쓰기-기준.md,08-서술규칙.md,HANDOFF.md,CLAUDE.md',
 ]
 user_args = sys.argv[1:]
 # 인자를 하나도 안 주면 예전 기본(=design-notes/ 최상위 *.md)을 이어간다.
