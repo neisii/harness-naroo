@@ -18,7 +18,7 @@ python ${CLAUDE_PLUGIN_ROOT}/skills/session-wake/session_wake.py <세션명> [--
 2. 같은 이름 레코드 중 `pid`가 있는 것이 있으면 resume하지 않고 `[이미 떠 있음]`을 출력한다. 이때는 그 세션에 SendMessage로 바로 지시한다. `state` 값은 보지 않는다.
 3. `pid`가 없으면 그 레코드의 **전체 sessionId**(UUID)와 `cwd`로 `claude --bg --resume <전체 sessionId>`를 실행한다. 짧은 id는 쓰지 않으며, UUID가 아니거나 `cwd`가 없으면 중단한다.
 4. 출력에 `started a copy as <newId>`가 있으면 원본이 실제로는 살아 있었다는 뜻이다. 그 복사본을 즉시 `claude stop <newId>`로 종료하고, 원본 이름으로 SendMessage하라고 안내한다. 복사본에는 보내지 않는다.
-5. `note: woke session ...`만 있고 복사본 note가 없으면 정상 재개다. 같은 id·이름으로 복귀하며 기본 시작 프롬프트와 `--disallowedTools`는 다시 넣지 않는다(최초 기동 옵션이 자동으로 재적용된다).
+5. `note: woke session ...`만 있고 복사본 note가 없으면 정상 재개다. 같은 id·이름으로 복귀하며 기본 시작 프롬프트와 `--disallowedTools`는 다시 넣지 않는다(최초 기동 옵션이 자동으로 재적용된다). 실측(2026-11-19, 2.1.328): 기동 옵션은 `~/.claude/jobs/<id>/state.json`의 `respawnFlags`에 저장되고, 깨울 때 note에 `woke session … with its saved options (-n, --permission-mode, --disallowedTools, --model)`처럼 다시 적용한 옵션이 그대로 나온다. note에 옵션이 셋뿐이면 처음부터 그 셋으로 띄운 세션이다.
 6. 마지막에 같은 이름 레코드를 다시 조회해 건수를 보고한다. 1건이 아니면 경고한다.
 
 프로세스를 직접 종료하지 않는다(`claude stop`만 쓴다). 이름이 아예 없으면 `[없음]`을 출력하고 종료 코드 3을 돌려준다. 이때는 `claude --bg`로 새 세션을 띄운다.
