@@ -94,7 +94,7 @@ Ordered by what carries the promise — the coherence core first, project-specif
 | `skills/qa-inbox/` | Read-only view of a delegate's (`qa-master`) open inter-session requests from the ledger, sorted blocked-first then oldest (AG-15) |
 | `skills/pending-status-check/` | Read-only aggregation of the whole AG-15 waiting ledger into text or JSON (severity by deadline multiple, hold/deferred, rule-propagation, 3T pre-check) — the status-JSON producer that `patrol-notify` consumes |
 | `skills/patrol-notify/` | Back-off notifier for "waiting on a human" items (AG-15): reads a status JSON, notifies via os-notify, tracks per-item back-off state |
-| `skills/session-stall-check/` | Detect whether a background session is silently stalled on input (via transcript mtime) |
+| `skills/session-stall-check/` | Classify a session as waiting on a human, busy, awaiting instructions, or gone (via `claude agents` state·status·pid), and say whether to re-request, alert a human, or wake it |
 | `skills/session-wake/` | Wake a named background session by name, without creating a duplicate |
 | `skills/os-notify/` | Fire a native OS notification (Windows/macOS/Linux) with stdout fallback — the primitive the patrol/alert skills call |
 
