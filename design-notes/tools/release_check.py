@@ -75,7 +75,7 @@ def check_tools():
             where = '%s:%d' % (os.path.basename(p)[13:30], i)
             for m in re.finditer(r'([A-Za-z0-9_.-]+\.ps1)', line):
                 found.setdefault(m.group(1), []).append(where)
-            if re.search(r'<공유문서 루트>\\scripts\\', line):
+            if re.search(r'<공유문서 루트>\\scripts\\[A-Za-z]', line):  # 도구 폴더를 가리킬 때만(일반 위치 규칙 AR-11은 제외)
                 found.setdefault('<공유문서 루트>\\scripts\\ 경로', []).append(where)
             for name in ORIGINAL_TOOLS:
                 if name not in skills and re.search(r'(?<![\w-])%s(?![\w-])' % re.escape(name), line):
