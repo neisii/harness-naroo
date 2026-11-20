@@ -4,7 +4,7 @@
 
 ## 1. 한눈에
 
-- **레포:** github.com/neisii/harness-naroo (공개, `main`). 작업 브랜치 `0.2.0`(2026-11-20 저녁 푸시, 원격과 같음).
+- **레포:** github.com/neisii/harness-naroo (공개, `main`). 작업 브랜치 `0.2.0`. **2026-11-20 밤 기준 로컬 커밋이 원격보다 앞섬(미푸시).** push는 사용자 요청 때만.
 - **두 층:** (a) 공개 플러그인 — 스킬 13개(+seosul-lint, +reversibility-gate) + `rules/`(S 차세대 하네스 정본). (b) `design-notes/` — 하네스 **다음 버전** 설계 방법론.
 - 이 핸드오프는 **(b) design-notes** 작업을 잇기 위한 것.
 - **사용자:** 백가희(neisii). 출처: S 차세대 **폐쇄망 SI**(익명화). 설계 노트에서 1인칭 "내" = 사용자.
@@ -147,16 +147,29 @@
 
 판단이 안 서면(사용자가 직접 설치·업데이트했을 수 있음) 사용자에게 묻고 적는다. 다음 세션은 SessionStart 훅 안내 2번에 따라 이 줄을 읽는다.
 
-리로드: 필요 — /reload-plugins (skills/ 변경: dlc-gate 문구·안내 추가, 스크립트 13개 shebang 제거, 사전 31~33. 단 설치본은 버전별 사본이라 먼저 `plugin.json` 버전을 올리고 `claude plugin update`를 해야 반영된다. 2026-11-20 사용자가 /reload-plugins를 한 번 실행했지만 그건 rc.1 사본을 다시 읽은 것)
+리로드: 필요 — /reload-plugins (skills/ 변경: 새 스킬 survey-gen·server-ops, session-wake SKILL.md 가이드 추가, seosul-lint 사전 35·36·29번, 앞 세션의 dlc-gate·shebang 제거·사전 31~33 포함. 설치본은 버전별 사본이라 먼저 `plugin.json` 버전을 올리고 `claude plugin update` 뒤 리로드해야 반영된다. 버전 올리기는 출시 점검표의 출시 절차에서 한다)
 
-**현재 상태(2026-11-20 저녁):** `0.2.0` 브랜치. 원격과 같고 작업 트리 깨끗. 이번 세션(11-20) 결과는 아래 "이번 세션에 정한 것"과 각 정본에 있다. 스케일 개밥은 문서 10 E-8에서 끝났다(종합 판정 하나만 결정 대기).
+**현재 상태(2026-11-20 밤):** `0.2.0` 브랜치, 작업 트리 깨끗, 로컬 커밋이 원격보다 앞섬(미푸시). **남은 일은 전부 출시 점검표 한 장에 있다 → [`tasks/release-0.2.0/checklist.md`](./tasks/release-0.2.0/checklist.md).** 관문 2는 `python3 design-notes/tools/release_check.py`로 잰다(2026-11-20 밤: 실패 1 — 규칙이 원본 도구 9종을 표시 없이 부름).
+
+**이번 세션(2026-11-20 밤)에 정한 것 (재논의 불필요):**
+- **완성도 측정 = 네 관문 통과 여부**(범위 · 약속과 실제 · 출시 모양 재검증 · 초심자). 퍼센트로 재지 않는다. 점검표가 정본.
+- **초심자 가이드북 `docs/guide/`:** "AI를 쓰다 겪는 문제" 순서. 한 권, 1부(혼자 쓸 때 0.1.x)·2부(여럿을 함께 쓸 때 0.2.0). 장 = 문제 → 해결책 후보 → 선택 제안(+필요하면 해 보기·확인). 평서체(08에 예외로 명시). 문장마다 누가 무엇을 하는지 밝힌다. 공개판에 없는 것은 꼬리표(규칙 ID / 스킬 / 설계 단계 / 공개판에 없음). 상황 지도·7장·9장(+`examples/merge_break_demo.sh`) 완료. README 첫 화면에 "누구를 위한 것인가"·"처음이라면 여기부터" 절.
+- **교정 기준 K1~K6**(번역투 · 주체 누락 · 끊긴 문장 · 공개판과 그 밖의 혼동 · 사실이 아니거나 낡은 서술 · 비유와 실제 섞임). docs/는 전부, design-notes 정본은 K2를 결론·요약에만, 작업 기록(HANDOFF·backlog 등)은 제외. 교정 완료·커밋됨.
+- **용어:** "3층 관계" → "3단 구조"(확정). "구성 층"(사전 29)과 "많이 돌리기"(= 각 세션이 일을 스스로 가져가는 pull 성질)는 한자리에서 재논의 대기. 사전 35(돌리다)·36(모양) 추가.
+- **design-notes/는 하네스 동작에 영향 없음.** 독자 = 사용자와 작업을 잇는 Claude 세션(2차: 근거가 궁금한 외부인). rules/·skills/는 AI가 그대로 따르므로 가장 엄격하게.
+- **작업 기록 `design-notes/tasks/<스킬명>/blueprint.md·completion-report.md`.** 규칙 CM-02(완료보고서 비커밋)의 예외로 이 저장소는 커밋한다(범용화 이력).
+- **새 스킬 둘(공개판):** `survey-gen`(설문 관리 체계를 새로 짬: `docs/surveys/<날짜-순번-이름>/`, 상태는 survey.json, new·record·close·index) · `server-ops`(**Spring Boot + Gradle 전용**, 공용 실행기 + `.claude/harness-servers.json`, init·build·start·stop·status, stop은 `--yes`일 때만, 쓰기 전 적용 판단 — 맞지 않으면 실행하지 않고 환경 차이를 안내). 다른 빌더 지원은 backlog T11(0.2.0 공개 뒤).
+- **위임 방식:** 이번 구현은 서브에이전트(`Agent` 도구, general-purpose, Sonnet)로 했다. 서브에이전트와 별도 세션(`claude --bg`)의 차이·권장은 `skills/session-wake/SKILL.md` "먼저: 별도 세션이 필요한 일인가"에 적었다. 구현 뒤 새 맥락 검증자를 따로 띄워 재검증 — 두 스킬 모두 실제 결함(템플릿 주석 자리표시자, PID 재사용 시 무관한 프로세스 종료, 서버 이름 경로 탈출)을 잡았다.
+- 규칙의 PowerShell 스크립트 이름(worktree·memcheck·pending-status-check)은 공개판 스킬 경로로 바꿨다.
+
+
 
 **설치 상태 — 지금은 로컬 마켓(2026-11-20, 되돌릴 것):** 0.2.0 브랜치를 실전 검증하려고 마켓 `harness-naroo`를 GitHub 원본에서 **이 PC의 저장소 폴더**(`/Users/neisii/Development/harness-naroo`, `source: directory`)로 바꿔 등록하고 `ai-dlc-harness` **0.2.0-rc.1**을 전역 설치했다(`plugin.json` 커밋 `77eada6`). 이 플러그인을 쓰는 모든 프로젝트가 이 판을 받는다.
 - 반영 규칙은 같다: 저장소를 고치면 `plugin.json` 버전을 올리고 `claude plugin update` → 쓰는 세션에서 `/reload-plugins`. 같은 번호면 건너뛴다.
 - 폴더 원본은 작업 폴더를 통째로 사본 뜬다 — 비추적 파일(`.claude/settings.local.json`, `.DS_Store`)까지 캐시에 들어간다(`.git`은 안 들어감). 이 PC 안이라 해는 없다.
 - 되돌리기(0.2.0 정식 릴리스 뒤): `claude plugin marketplace remove harness-naroo` → `claude plugin marketplace add neisii/harness-naroo` → `claude plugin install ai-dlc-harness@harness-naroo --scope user`. 마켓을 지우면 플러그인도 함께 제거된다(지울 때 "saved options, secrets and data"도 지운다고 안내함).
 
-**이번 세션에 정한 것 (재논의 불필요, 근거는 정본):**
+**앞 세션(2026-11-20 낮)에 정한 것 (재논의 불필요, 근거는 정본):**
 - **귀속 줄(CM-11):** 팀이 정하고, 금지면 Claude Code `attribution` 설정으로 끈다. 그 밖(훅·푸시 검사·체리픽 교정)은 통제하지 않는다. 이 저장소는 공유 `.claude/settings.json`에 빈 값, `commit-msg` 훅은 로컬 선택(이미 깔림). `Claude-Run-Id`는 메트릭 훅이 있는 팀만 해당. 정본 `귀속문구-논의정리.md` 7절, 배포 `rules/` 5단계·00, `docs/환경값-정의.md` H.
 - **하네스 범위 원칙:** 하네스는 전체 흐름을 잡는 것이지 완벽 통제가 아니다. 플랫폼(Claude Code·GitHub)이 주는 장치를 쓰고 다시 만들지 않는다. 메모리 [[harness-scope-not-total-control]].
 - **유휴 정리:** 값은 더 재지 않는다. bg 실무자는 놀면 사라지는 게 평소 흐름 → 보내기 전 `session-stall-check`, 프로세스 없으면 `session-wake`. 문서 10 E-6.
@@ -171,20 +184,22 @@
 - **(11-20) shebang 제거 완료:** 13개 파일 첫 줄 삭제, `new_worktree.py` 실행 권한도 뺌. 문법 검사·데모·린터 실행 확인. 디렉터리 재스캔은 main 병합 뒤.
 - **(11-20) 대화 언어:** 하네스는 강제하지 않는다(`docs/환경값-정의.md` I). 사용자와의 대화 한국어는 전역 `~/.claude/CLAUDE.md`에만 적음. 원인 추정: 맥락 압축 요약이 영어라 응답이 끌려감.
 
-**알아 둘 사실 (이번 세션 발견):**
+**알아 둘 사실 (2026-11-20 낮 발견):**
 - `~/.claude/jobs/<id>/state.json`에 `respawnFlags`(기동 옵션)·`inFlight`(백그라운드 작업 수로 보임)·`detail`(세션이 뭘 하는지 한 줄)이 있다. `claude agents --json`과 `ps`엔 기동 옵션이 안 나온다.
 - 세션은 다른 세션이 SendMessage로 보낸 push 요청을 스스로 거부했다(권한 세탁 방지). 시험이 필요하면 `claude --bg --resume <세션ID> "<지시>"`로 사용자 입력으로 준다.
 - 시험 세션 정리: `claude stop` 뒤 `claude rm <id>`(목록·job 기록 삭제, 대화 기록은 남김) → 대화 기록 폴더는 safe-delete. 반복문 안의 `claude stop`은 입력을 붙잡으니 `</dev/null`을 붙인다.
 - 게이트웨이 화면의 "Compacted while idle"은 유휴 중 자동 압축이지 재시작이 아니다(E-4 판정을 이것 때문에 틀렸다가 정정).
 - **로컬 시범 훅 2개**(`.claude/settings.local.json`, 비추적): ① `PostToolUse` — md를 쓰면 seosul-lint 결과를 바로 보여 줌 ② `SessionStart`(`startup|clear|compact`) — 시작 안내(0번 표시·핸드오프·`리로드:` 줄·남은 예약 확인). 둘 다 동작 확인. 자리를 비운 사이 자동 압축(idle compaction)에도 `compact`로 걸린다(2026-11-20 실측: 12:30 이후 압축, 13:30 이후 첫 응답에 0번 표시가 나옴). 단 그때 1번(핸드오프 읽기)은 `리로드:` 줄만 찾고 전체를 읽지 않았다.
 
-**남은 할 일:**
-1. **스케일 개밥 종합 판정 하나:** "막힌 워커 발견" 기준을 "이번엔 생기지 않음"으로 닫을지(권고, 스킬은 살아 있는 세션 5종으로 직접 시험함), 따로 시험할지. 정하면 문서 10 E-8 표 마지막 줄과 부록 E 결론을 쓴다.
-2. **규칙 후보 정리 → 정식 규칙에 넣을지:** 축약 승인은 대상·펼친 내용이 분명할 때만 · 위험 예고와 확인 결과에 근거 등급(직접 확인/겪은 일/추론) · 덮어쓰기 대체는 스크래치에만 · BR-03과 CM-06 관계(backlog T8) · (E-7) 충돌 판정 규칙. 채택한 것은 `rules/`와 가이드 4걸음에 반영.
-3. **0.2.0 출시:** 사전 29번 숙제("구성 층" 설계 용어를 README와 함께 재검토. README는 이미 "구성 층"을 안 씀) → `plugin.json` 0.2.0 → `0.2.0` 브랜치를 main에 PR·병합 → 태그 `v0.2.0` → 디렉터리 재스캔 결과 확인(shebang 제거 효과).
-4. **출시 뒤:** 마켓을 GitHub로 되돌리기(위 "설치 상태"의 명령) → 재설치·리로드.
-5. 미확인 하나: 백그라운드 작업을 걸어 두고 기다리는 실무자의 상태와 유휴 정리 여부(`inFlight`가 단서). 관측되면 그때.
-6. 공식 디렉터리 문의(9절) 답장 대기.
-7. 작은 것(출시를 막지 않음): `rules/` 8단계 120줄 "가르지 못했으므로"→"판별하지 못했으므로" 여부 · commit-msg 로컬 훅 오탐(이름이 Claude인 사람) · 시작 안내 훅 1번 문구(요약이 있어도 핸드오프 전체를 읽는다) — 한 번 더 빠뜨리면 고친다.
+**남은 할 일:** 출시 점검표(`tasks/release-0.2.0/checklist.md`)가 정본. 요약:
+1. **관문 2 실패 해소:** 규칙이 공개판에 없는 원본 도구 9종(md2html·check_render(AR-14)·api-spec-gen·scenario-verify·effort-ledger·ops-report·sscheck·table-spec-convert, `<공유문서 루트>\scripts\` 경로)을 표시 없이 부름. 하나씩 논의 — "(공개판에 없음)" 표시 / 규칙 수정 / 스킬로 만들기.
+2. 가이드: 1부 6장, 2부 10장, 용어집. 결정 대기: 7장 장면을 실제 겪은 것으로 바꿀지, 9장 "손으로" 절차 2개를 규칙으로 옮길지.
+3. 용어 재논의: "구성 층"(사전 29), "많이 돌리기".
+4. 규칙 후보 정리(축약 승인·근거 등급·덮어쓰기 대체·BR-03/CM-06·E-7 충돌 판정).
+5. 관문 3(빈 저장소에 0.2.0 설치해 실무자 세션 → PR), 관문 4(새 세션을 초심자 대역으로).
+6. 출시 절차(plugin.json 0.2.0 → PR·병합 → 태그 → 디렉터리 재스캔 → 마켓을 GitHub로 되돌리기).
+7. 공식 디렉터리 문의 답장 대기. 작은 것: commit-msg 훅 오탐, 시작 안내 훅 문구.
 
-**새 세션 첫 수:** 이 핸드오프 → 00-인덱스 → 필요한 정본만. 남은 할 일 1번(종합 판정) 결정을 받고 3번(출시)으로.
+**알아 둘 함정 (이번 세션):** 이 셸은 zsh라 `for f in $변수`·`P="cmd"; $P`가 단어로 나뉘지 않는다(점검이 조용히 0건으로 끝남). 함수나 Python으로 돌린다. `git diff --name-only`는 한글 경로를 8진수로 바꾸니 `-c core.quotepath=false -z`를 쓴다.
+
+**새 세션 첫 수:** 이 핸드오프 → 출시 점검표 → `release_check.py` 실행. 사용자와 남은 할 일 1번(원본 도구 9종)부터.
