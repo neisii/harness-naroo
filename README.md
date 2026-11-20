@@ -1,168 +1,140 @@
-# AI-DLC Harness (naroo)
+# AI-DLC 하네스 (naroo)
 
-**An agent reports "done." But whether its result still fits the whole process and system — who checks that?**
+**한국어** · [English](./README.en.md) — *An English page explains what this harness does and how it differs.*
 
-A Claude Code harness that checks an agent's output against **whole-system coherence**, not just whether the one task "succeeded" — through human gates, re-verification, and a reversibility check. A 12-step rule system distilled from a real SI delivery.
+**에이전트는 "완료"라고 한다. 그 결과가 전체 흐름·시스템과 맞물리는지는 누가 확인하나?**
 
-*For SI developers — and, naturally, people who work in Korean — who hold that an agent succeeding at its task isn't the finish line. Keeping the whole system coherent is, and it has to be checkable.*
+개별 작업이 성공했는지가 아니라, 그 결과가 **전체 시스템의 정합성**을 깨지 않는지 확인하는 Claude Code 하네스입니다. 사람 게이트, 새 맥락 재검증, 가역성 판정으로 확인합니다. 실제 SI 납품에서 쓰던 12단계 규칙 체계를 추려냈습니다.
 
-> Distilled and anonymized from a real next-gen public-procurement build (2026). On that project this
-> harness helped deliver **34 screens about a month ahead of schedule**, grew to **13 rules · 27 skills ·
-> 31 tools**, and ran **7 role-scoped sessions** with a patrol loop every 10 minutes.
-> See [`NOTICE.md`](./NOTICE.md) for how it was anonymized, and [`docs/overview-en.md`](./docs/overview-en.md)
-> for the full picture.
+*대상: 에이전트가 작업에 성공한 게 끝이 아니라 전체 정합성을 지키는 게 끝이고, 그게 확인 가능해야 한다고 믿는 SI·한국어 개발자.*
 
-한국어 요약은 [아래](#한국어-요약)에 있습니다.
+> 실제 공공 조달 차세대 구축(2026)에서 운영하던 하네스를 익명화해 공개했습니다. 그 프로젝트에서
+> **화면 34개를 일정보다 한 달가량 앞당겨 납품**하는 데 쓰였고, **규칙 13개·스킬 27개·도구 31개**로
+> 자랐으며, **역할 세션 7개**를 10분 간격 순찰과 함께 돌렸습니다.
+> 익명화 방식은 [`NOTICE.md`](./NOTICE.md), 전체 그림은 [`docs/overview-en.md`](./docs/overview-en.md)(영문).
 
 ---
 
-## What this is
+## 무엇이 다른가
 
-Most "AI coding" setups break down on a real delivery project: the model guesses business rules, edits
-outside its lane, marks untested work as verified, or stalls silently waiting for input. This harness is
-the set of **rules, gates, and session roles** that kept an AI pair-programming workflow honest and shippable
-over a 4-month SI project.
+에이전트 도구 대부분은 "이 작업이 성공했나"를 봅니다. 이 하네스는 "이 작업이 전체를 깨뜨리지 않았나"를 봅니다.
 
-The core idea: **treat the AI like a disciplined teammate.** Clear boundaries, a human approval gate before
-implementation, one canonical source of truth per rule, and "verified only means actually verified."
+1. **구현 전에 사람 게이트.** 청사진 → **사람 승인** → 구현 → 검증 → 완료보고. 승인 전엔 구현하지 않습니다.
+2. **검증은 실제로 검증한 것만.** 확인하지 못한 일은 "미검증"으로 적습니다. 슬쩍 통과시키지 않습니다.
+3. **새 맥락 재검증.** 만든 쪽과 같은 맥락을 가진 검증자는 같은 맹점을 가집니다. 커밋 승인 전에, 그 맥락을 물려받지 않은 검증자가 한 번 더 봅니다. 자체 개밥(dogfooding, 만든 도구를 직접 실제 작업에 써 보는 것)에서 첫 검증이 통과시킨 구멍을 이 재검증이 실제로 잡았습니다.
+4. **자기 채점 금지.** 결과를 만든 세션은 그 결과를 승인하지 않습니다. 만든 쪽 ≠ 승인하는 쪽.
+5. **가역성 판정은 거부권 우선.** "혼자 해도 되나, 멈추고 물어야 하나"를 기준 4개(되돌릴 수 있나·요구가 명확한가·영향 범위·업무 규칙 연관)로 정합니다. 기준 하나라도 걸리면 에이전트는 혼자 진행하지 않고, 그 자리에서 사람에게 승인을 받거나 보류한 채 기다립니다. 나머지 기준이 모두 괜찮아도, 걸린 하나를 덮어놓고 지나가지 않습니다.
+6. **플랫폼 기능을 쓰고, 다시 만들지 않는다.** 하네스는 전체 흐름을 잡아 주는 것이지 모든 걸 통제하지 않습니다. Claude Code에 이미 설정이 있으면(권한, 커밋 귀속 문구, 백그라운드 세션) 그걸 씁니다.
 
-## The model
+## 두 가지 쓰는 법
 
-- **12-step rule system** (`rules/`) — the canonical rules (정본), each step entered *just before* the action
-  it governs. IDs like `GL` (global), `RL` (roles), `GT` (gate), `CM` (commit), `AG` (agent-to-agent),
-  `CS` (commit safety), `WT` (worktree). Start at [`rules/향상된_AI-DLC_00-핵심규칙요약.md`](./rules).
-- **Human Gate** — blueprint → **human (or `qa-master`) approval** → implement → verify → completion report.
-  Nothing gets implemented before approval.
-- **Role sessions** — decision-making, rule edits, and tool-building are split into separate sessions
-  (`qa-master`, `ai-rule-master`, `skill-gen-master`, `*-developer`) so no one session is a bottleneck.
-- **Skills** (`skills/`) — a curated, portable subset you can actually run (see below).
+| | 세션 하나로 (0.1부터) | 여러 세션으로 나눠서 (0.2.0, 선택) |
+|---|---|---|
+| 무엇 | 세션마다 지키는 규율: 청사진 → 승인 → 구현 → 검증, 가역성, 커밋 안전, 서술 규칙 | 작업을 여러 Claude Code 세션에 나눠 굴림: **사람(결정) → 게이트웨이 세션(전달·감시) → 실무자 세션(구현)** |
+| 누가 승인하나 | 사람 | 여전히 사람. 게이트웨이는 **관문이 아니라 창구**입니다. 사람의 승인을 원문 그대로 전하고, 위임기록에 없는 일은 전부 사람에게 올립니다 |
+| 필요한 것 | 플러그인 설치 | 플러그인 + 짧은 위임기록. 전용 QA 세션·대기 장부·순찰은 사람이 대신합니다(소규모 모드) |
+| 이후 계획 | — | 원본 SI에서 쓰던 전용 QA 세션·대기 장부·순찰 등을 점진적으로 일반화해, 필요한 팀이 하나씩 더해 쓸 수 있게 합니다 |
+| 안내 | `rules/` (`00`부터) | [`docs/오케스트레이션-구성.md`](./docs/오케스트레이션-구성.md) |
 
-## Install
+여러 세션 구성은 0.2.0에서 새로 들어왔고, 실제 저장소 작업으로 개밥을 했습니다. 게이트 왕복, 좁은 위임(게이트웨이가 독립 검증과 새 맥락 재검증을 거친 뒤에만 커밋 계획을 승인), 실무자 세 명이 PR·병합까지 간 작업이 포함됩니다. 아직 표본이 작고, 안내서에 검증 안 된 부분을 따로 표시해 두었습니다.
 
-Requires [Claude Code](https://claude.com/claude-code).
+## 설치
+
+[Claude Code](https://claude.com/claude-code)가 필요합니다.
 
 ```sh
-# in Claude Code
+# Claude Code 안에서
 /plugin marketplace add neisii/harness-naroo
 /plugin install ai-dlc-harness@harness-naroo
 ```
 
-Then restart or reload. The `dlc-gate` skill activates at AI-DLC decision points, and the rule documents
-load from the plugin root.
+설치 뒤 재시작하거나 `/reload-plugins`를 실행합니다. `dlc-gate` 스킬이 AI-DLC 결정 지점에서 켜지고, 규칙 문서는 플러그인 폴더에서 읽힙니다.
 
-To try it locally before publishing:
+로컬 사본으로 시험하려면, 먼저 저장소를 내 컴퓨터에 복제합니다.
 
 ```sh
-/plugin marketplace add /path/to/harness-naroo
+# 터미널에서
+git clone https://github.com/neisii/harness-naroo.git
+```
+
+그다음 Claude Code에서 복제한 폴더를 마켓으로 등록하고 설치합니다.
+
+```sh
+# Claude Code 안에서
+/plugin marketplace add <복제한 폴더 경로>
 /plugin install ai-dlc-harness@harness-naroo
 ```
 
-## Try it
+## 해 보기
 
-See a rule decide, in one command — a runnable slice of the reversibility rule that routes four real situations to *do it / report after / stop and ask / hold*:
+명령 하나로 규칙이 판정하는 걸 볼 수 있습니다. 가역성 규칙의 실행 조각이 실제 상황들을 *한다 / 하고 보고 / 멈추고 승인 / 보류*로 나눕니다.
 
 ```sh
 python3 examples/reversibility_demo.py
 ```
 
-Watch case **[3]**: an action that's reversible, clear, and looks like "your call" still gets stopped — because it's a business decision. That one-glance veto is the whole point: not "did the task succeed," but "does this keep the whole coherent." Full ~5-minute walk-through (this, plus the check catching its own author): **[QUICKSTART.md](./QUICKSTART.md)**.
+**[3]번**을 보세요. 되돌릴 수 있고, 요구도 명확하고, "알아서 해도 될 것" 같은 일이 멈춥니다. 업무 결정이기 때문입니다. 한눈에 걸리는 이 거부권이 핵심입니다. 5분 안내는 [QUICKSTART.md](./QUICKSTART.md)(영문, 끝에 한국어 요약).
 
-The core value shows up **inside your own project**: once installed, `dlc-gate` stops you at the real decision points (before implementing, before committing, when something is marked "verified") — honest, not a canned demo.
+진짜 가치는 **내 프로젝트 안에서** 드러납니다. 설치하면 `dlc-gate`가 실제 결정 지점(구현 전, 커밋 전, "검증 완료"라고 적을 때)에서 멈춰 세웁니다.
 
-Also standalone right now — the Korean-prose linter: `python3 skills/seosul-lint/seosul_lint.py path/to/your/korean/docs` (flags translationese, emoji, 2nd-person; standard-library Python).
+따로 바로 쓸 수 있는 것도 있습니다. 한국어 서술 린터: `python3 skills/seosul-lint/seosul_lint.py <문서 폴더>` (번역투·이모지·2인칭 점검, 표준 라이브러리만 사용).
 
-## If the dog food was edible, leave a star
+## 들어 있는 것
 
-This harness ate its own dog food — on a real delivery, and on its own design notes (the linter above runs on them). If the idea lands — an agent harness that checks the **whole**, not just the part — a star helps the next SI developer find it.
+**정합성 핵심**
 
-## What's inside
-
-Ordered by what carries the promise — the coherence core first, project-specific plumbing last.
-
-**The coherence core** — keep the whole intact, and make it checkable:
-
-| Path | What |
+| 경로 | 내용 |
 |---|---|
-| `rules/` | The 12-step canonical rule documents (Korean, 정본) + the `00` summary index — including "verified only means *actually* verified" and the re-verification steps |
-| `skills/dlc-gate/` | Points you to the right canonical rule *at the moment you act* (gate, commit, verify…) |
-| `skills/reversibility-gate/` | Decide "do it alone vs stop and ask" from four criteria (reversible? clear? scope? business rule?) → autonomous / audit-after / approve-before / hold. **Veto-first, never a point sum.** Records the self-assessed evidence as AG-15-compatible JSON. The runnable engine behind design rule 07 (try `examples/reversibility_demo.py`) |
+| `rules/` | 12단계 정본 규칙 + `00` 핵심 요약 |
+| `skills/dlc-gate/` | 행동하는 순간(게이트·커밋·검증) 맞는 규칙으로 안내 |
+| `skills/reversibility-gate/` | 기준 4개로 자율실행/사후검수/사전승인/보류 판정(거부권 우선), 근거를 JSON으로 남김 |
 
-**Keeping the human un-bottlenecked** — async review of what agents did (rule 03 · AG-15):
+**여러 세션을 사람 병목 없이 굴리기**
 
-| Path | What |
+| 경로 | 내용 |
 |---|---|
-| `skills/qa-inbox/` | Read-only view of a delegate's (`qa-master`) open inter-session requests from the ledger, sorted blocked-first then oldest (AG-15) |
-| `skills/pending-status-check/` | Read-only aggregation of the whole AG-15 waiting ledger into text or JSON (severity by deadline multiple, hold/deferred, rule-propagation, 3T pre-check) — the status-JSON producer that `patrol-notify` consumes |
-| `skills/patrol-notify/` | Back-off notifier for "waiting on a human" items (AG-15): reads a status JSON, notifies via os-notify, tracks per-item back-off state |
-| `skills/session-stall-check/` | Classify a session as waiting on a human, busy, awaiting instructions, or gone (via `claude agents` state·status·pid), and say whether to re-request, alert a human, or wake it |
-| `skills/session-wake/` | Wake a named background session by name, without creating a duplicate |
-| `skills/os-notify/` | Fire a native OS notification (Windows/macOS/Linux) with stdout fallback — the primitive the patrol/alert skills call |
+| `skills/session-stall-check/` | 세션이 사람 입력 대기인지, 작업 중인지, 지시 대기인지, 프로세스가 없는지 판정(`claude agents`의 state·status·pid). 재요청할지·사람에게 알릴지·깨울지까지 알려 줌 |
+| `skills/session-wake/` | 이름으로 백그라운드 세션을 복사본 없이 깨움. 처음 띄울 때의 옵션이 그대로 살아남 |
+| `skills/qa-inbox/` · `skills/pending-status-check/` | 세션 간 대기 장부(AG-15) 읽기 전용 조회 |
+| `skills/patrol-notify/` · `skills/os-notify/` | "사람 응답 대기" 항목 알림(간격을 점점 늘림), OS 알림 기본 도구 |
 
-**Utilities & reference** — standalone or project-specific; adapt to your own setup:
+**보조 도구**
 
-| Path | What |
+| 경로 | 내용 |
 |---|---|
-| `skills/seosul-lint/` | Read-only Korean prose linter: flags translationese/overstated terms, emoji, and 2nd-person ("당신") in Markdown, with suggested replacements. Dictionary-driven — swap the dict for your own rules. Promoted from the `design-notes/` writing-rule tooling |
-| `skills/worktree/` | Create a work branch + sparse worktree per the WT rules (no-upstream branch, remote behind-check, sparse-checkout) — cross-platform (macOS/Linux/Windows) |
-| `skills/memcheck/` | Read-only check of free physical memory (+ top Java processes) before starting a server — cross-platform (WT-10 gate) |
-| `skills/safe-delete/` | Move to the OS trash instead of permanent delete, with protected-folder/home/root guards (GL-28) — cross-platform |
-| `skills/claude-update-check/` | Check for a new Claude Code version and record an approve/defer/reject decision (never installs) |
+| `skills/seosul-lint/` | 한국어 서술 린터. 사전 파일만 바꾸면 다른 팀 규칙에도 씀 |
+| `skills/worktree/` | WT 규칙대로 작업 브랜치 + sparse 워크트리 생성 |
+| `skills/memcheck/` | 서버·테스트 시작 전 여유 메모리 점검 |
+| `skills/safe-delete/` | 영구 삭제 대신 휴지통으로, 보호 폴더 가드 포함 |
+| `skills/claude-update-check/` | Claude Code 새 버전 점검과 결정 기록(설치는 하지 않음) |
 
-**Docs & notes:**
+**문서**
 
-| Path | What |
+| 경로 | 내용 |
 |---|---|
-| `docs/overview-en.md` | English overview + the project case studies (scenario verification, stall prevention, bottleneck removal…) |
-| `design-notes/` | Design rationale for the harness's **next version** — positioning, the human-bottleneck & flow-control problems, branch/ledger strategy, reversibility gate, and writing rules, tied together by an operating-loop diagram (Korean; 9 Mermaid diagrams). Work-in-progress notes. |
-| `NOTICE.md` | Anonymization & reference-copy disclosure |
+| `docs/오케스트레이션-구성.md` | 여러 세션 구성(소규모 모드) 안내서 |
+| `docs/위임기록-템플릿.md` | 게이트웨이에 맡긴 일을 적는 양식(좁은 위임 포함) |
+| `docs/환경값-정의.md` | 내 환경에 맞춰 바꿀 값(경로·스택·OS·커밋 귀속 문구·대화 언어) |
+| `docs/overview-en.md` | 영문 개요와 사례 |
+| `design-notes/` | 설계 근거와 개밥 기록(진행 중) |
+| `NOTICE.md` | 익명화 고지 |
 
-The bundled skills use only the Python standard library and were rewritten to be portable.
+번들 스킬은 모두 macOS/Linux/Windows 공용이고 Python 표준 라이브러리만 씁니다.
 
-## Caveats
+## 유의할 점
 
-- The **rule documents are in Korean** (kept as the canonical source; not machine-translated to avoid drift).
-  The README and `docs/overview-en.md` are the English entry points.
-- **Reference copies won't run as-is** outside the skills above — paths and names were genericized. See `NOTICE.md`.
-- The original harness ran on **Windows** with PowerShell/C# tooling (patrol notifier, status widgets); that
-  platform-specific tooling was **excluded** and is only described in `docs/overview-en.md`.
-- This is a **curated core**, not the full internal harness. Deeply project-coupled pipelines
-  (E2E scenario verification, doc consolidation, API-spec generation) are described as methodology rather than
-  shipped as runnable code.
-- **Data handling:** The plugin runs locally and sends no personal or project data off-platform. The one
-  outbound network call is `claude-update-check`, which reads the latest Claude Code version and changelog from
-  GitHub (`raw.githubusercontent.com`) and the npm registry — version info only, no user data. Some rules
-  instruct reading a local, read-only DB credential (`~/.claude/secrets/devdb_readonly.env`, AG-08) that is
-  never printed, logged, or transmitted; no secrets are bundled (see `NOTICE.md`).
+- **규칙은 한국어 정본**입니다. 번역본과 어긋나지 않도록 기계 번역하지 않았습니다. 영어 사용자는 [README.en.md](./README.en.md)와 `docs/overview-en.md`로 들어옵니다. 대화 언어는 하네스가 정하지 않습니다.
+- **고쳐 쓰지 말고 바꿔 읽기.** 규칙엔 원래 팀의 구체 값이 예시로 남아 있습니다. 무엇을 바꿔 읽을지는 [`docs/환경값-정의.md`](./docs/환경값-정의.md)에 모았습니다.
+- 원래 하네스는 **Windows**의 PowerShell/C# 도구와 함께 돌았습니다. 그 플랫폼 전용 도구는 빼고, 공용 스킬로 다시 썼습니다.
+- 내부 하네스 전체가 아니라 **추린 핵심**입니다. 프로젝트에 깊이 묶인 파이프라인(시나리오 검증, 문서 통합 등)은 방법론으로만 소개했습니다.
+- **데이터:** 플러그인은 로컬에서 동작하며 개인·프로젝트 데이터를 밖으로 보내지 않습니다. 외부 호출은 `claude-update-check`가 Claude Code 최신 버전·체인지로그를 GitHub·npm에서 읽는 것 하나뿐입니다(버전 정보만). 일부 규칙은 로컬의 읽기 전용 DB 자격증명(`~/.claude/secrets/devdb_readonly.env`, AG-08)을 읽지만 출력·기록·전송하지 않으며, 비밀은 동봉돼 있지 않습니다.
 
-## 한국어 요약
+## 개밥이 먹을 만했다면 별 하나
 
-> **에이전트는 "완료"라고 한다. 그게 전체 흐름·시스템과 맞물리는지는 누가 확인하나?**
-> 개별 작업의 성공이 아니라, 그 결과가 **전체 시스템의 정합성**을 깨지 않는지 확인하는 Claude Code 하네스 — 게이트·재검증·가역성 판정으로. 실제 SI 납품에서 추려냈습니다.
->
-> *표적: 에이전트가 작업에 성공한 게 끝이 아니라 전체 정합성을 지키는 게 끝이고, 그게 확인 가능해야 한다고 믿고 실행하는 SI·한국어 개발자.*
+이 하네스는 실제 납품, 자기 설계 문서, 자기 여러 세션 구성으로 개밥을 먹었습니다. "부분이 아니라 전체를 확인하는 에이전트 하네스"라는 생각이 와닿았다면, 별 하나가 다음 팀이 찾는 데 도움이 됩니다.
 
-실제 SI 프로젝트(2026, 공공 조달 차세대)에서 운영하던 Claude Code 하네스를 **익명화해 공개**한 것입니다.
-핵심은 **12단계 규칙 체계 + Human Gate(사람/`qa-master` 승인) + 역할 세션**으로 AI를 "규율 있는 팀원"처럼
-운영하는 방식입니다.
+## 라이선스
 
-설치: `/plugin marketplace add neisii/harness-naroo` → `/plugin install ai-dlc-harness@harness-naroo`
+MIT © 2026 neisii (Baek Ga Hui) — [`LICENSE`](./LICENSE) 참고.
 
-- `rules/` : 12단계 정본 규칙(한글)
-- `skills/` : 설치하면 실제 동작하는 범용 스킬 13개(dlc-gate, session-wake, session-stall-check, claude-update-check, worktree, memcheck, safe-delete, os-notify, patrol-notify, qa-inbox, pending-status-check, seosul-lint, reversibility-gate)
-  - `worktree`·`memcheck`·`safe-delete`·`os-notify`·`patrol-notify`·`qa-inbox`는 Windows 전용 PowerShell을 **macOS/Linux/Windows 공용 Python**으로 포팅한 것
-  - `seosul-lint`는 `design-notes/`의 서술 규칙 린터를 스킬로 승격한 것(번역투·이모지·2인칭 점검, 사전 교체형)
-  - `reversibility-gate`는 가역성 분류표(07)를 실행하는 라우터 — 기준 4개로 자율/사후검수/사전승인/보류를 정하고(거부권 우선) 근거를 JSON으로 남긴다. 데모: `examples/reversibility_demo.py`
-- `docs/overview-en.md` : 영문 개요 + 사례
-- `design-notes/` : 하네스 **다음 버전 설계 근거**(포지셔닝·사람 병목·브랜치/장부·가역성 게이트·서술 규칙 + 작동 루프). 한글, 다이어그램 9개. 진행 중 메모.
-- `NOTICE.md` : 익명화 고지
-
-결합도 높은 파이프라인(시나리오 검증, 문서 통합 등)은 `docs/`에 방법론으로만 소개했습니다.
-
-**데이터:** 플러그인은 로컬에서 동작하며 개인·프로젝트 데이터를 외부로 보내지 않습니다. 유일한 외부 호출은 `claude-update-check`가 Claude Code 최신 버전·체인지로그를 GitHub·npm에서 읽는 것뿐입니다(버전 정보만, 사용자 데이터 전송 없음). 일부 규칙은 로컬의 읽기 전용 DB 자격증명(`~/.claude/secrets/devdb_readonly.env`, AG-08)을 읽지만 출력·기록·전송하지 않으며, 비밀은 동봉돼 있지 않습니다(`NOTICE.md`).
-
-## License & credits
-
-MIT © 2026 neisii (Baek Ga Hui) — see [`LICENSE`](./LICENSE).
-
-Author: [github.com/neisii](https://github.com/neisii). Built with [Claude Code](https://claude.com/claude-code).
-Issues and improvements welcome.
+만든 사람: [github.com/neisii](https://github.com/neisii). [Claude Code](https://claude.com/claude-code)로 만들었습니다. 이슈와 개선 제안 환영합니다.

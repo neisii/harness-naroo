@@ -39,7 +39,7 @@ python3 examples/reversibility_demo.py
     → C 사전 승인   외부·공유인데 되돌릴 방법이 없다 → 보수적으로 멈추고 물어본다.
 ```
 
-**Watch case [3].** It is reversible, clear, and looks like "your call" — add up the points and you'd say "safe, just do it." But setting a discount rate is a **business decision**, so a single veto stops it. That is the whole idea: not "did the task succeed," but "does this decision keep the whole coherent." **Points can't outvote a veto.**
+**Watch case [3].** It is reversible, clear, and looks like "your call" — add up the points and you'd say "safe, just do it." But setting a discount rate is a **business decision**, so a single veto sends it to a human for approval instead of letting the agent go ahead on its own. That is the whole idea: not "did the task succeed," but "does this decision keep the whole coherent." **Points can't outvote a veto.**
 
 How they land (top box = the three vetoes; only what clears them drops to the ③ adjust step):
 
@@ -140,7 +140,9 @@ flowchart LR
 
 ## Then what?
 
-The real thing lives in your project: install it (see the [README](./README.md)), and `dlc-gate` stops you at the decision points a demo can't stage — before implementing, before committing, when something is about to be marked "verified."
+The real thing lives in your project: install it (see the [README](./README.en.md)), and `dlc-gate` stops you at the decision points a demo can't stage — before implementing, before committing, when something is about to be marked "verified."
+
+Splitting work across several Claude Code sessions? Version 0.2.0 adds a **small mode** — human decides, a gateway session relays and watches, worker sessions implement. See [`docs/overview-en.md`](./docs/overview-en.md#small-mode-020--multiple-sessions-without-the-full-setup) and the Korean setup guide [`docs/오케스트레이션-구성.md`](./docs/오케스트레이션-구성.md).
 
 If the dog food was edible, a star helps the next SI developer find it.
 
@@ -148,6 +150,7 @@ If the dog food was edible, a star helps the next SI developer find it.
 
 ## 한국어
 
-- **1부 — 돌려보기:** `python3 examples/reversibility_demo.py` — 가역성 규칙(07)이 상황 5개를 "혼자 함(A) / 하고 알림(B) / 멈추고 승인(C) / 보류(D)"로 판정한다. **[3]이 핵심** — 가역·명확·내 일처럼 보여도 '할인율'은 사업 결정이라 거부권으로 멈춘다. 점수로 못 덮는다.
+- **1부 — 돌려보기:** `python3 examples/reversibility_demo.py` — 가역성 규칙(07)이 상황 5개를 "혼자 함(A) / 하고 알림(B) / 멈추고 승인(C) / 보류(D)"로 판정한다. **[3]이 핵심** — 가역·명확·내 일처럼 보여도 '할인율'은 사업 결정이라, 에이전트가 혼자 진행하지 않고 사람의 승인을 받는다. 나머지 기준이 모두 괜찮아도 걸린 하나를 덮어놓고 지나가지 않는다.
 - **2부 — 보기:** `python3 skills/seosul-lint/seosul_lint.py design-notes/` — 규칙을 만든 사람이 놓친 번역투를 그 규칙의 린터가 잡는다. 규칙 만든 사람조차 규칙에 걸린다.
-- 둘 다 **한 조각**이지 하네스 전체의 5분 요약이 아니다. 전체는 네 실제 프로젝트에서 게이트가 제때 멈춰 세울 때 드러난다.
+- 둘 다 **한 조각**이지 하네스 전체의 5분 요약이 아니다. 전체는 실제 프로젝트에서 게이트가 제때 멈춰 세울 때 드러난다. 설치는 [README](./README.md).
+- **여러 세션으로 나눠 쓰기(0.2.0):** 사람(결정) → 게이트웨이 세션(전달·감시) → 실무자 세션(구현). 안내서는 [`docs/오케스트레이션-구성.md`](./docs/오케스트레이션-구성.md).

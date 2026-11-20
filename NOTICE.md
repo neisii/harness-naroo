@@ -37,5 +37,10 @@ the same placeholder everywhere:
 - The original harness ran on **Windows**; Windows-only tooling (PowerShell scripts, unsigned `.exe`/C# widgets)
   was **excluded** from this public release and is only described, not shipped.
 - The rule documents under `rules/` are the **canonical source (정본)** and are kept in Korean.
+- **Skill scripts have no shebang line.** Run them with Python as each `SKILL.md` shows
+  (`python -X utf8 <script>`); they are not meant to be executed directly (`./script.py`).
+- **Dogfood records in `design-notes/` (0.2.0)** come from the author's own sample repository, not from the
+  client project. They contain no client data. / `design-notes/`의 개밥(dogfooding) 기록은 원 프로젝트가 아니라
+  작성자가 만든 시험용 저장소에서 나온 것이며, 고객 데이터를 담고 있지 않습니다.
 
 If you believe any residual identifier slipped through, please open an issue.
