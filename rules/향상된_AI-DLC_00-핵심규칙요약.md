@@ -83,7 +83,7 @@
 | 원격에서 바뀐 설정 파일(yaml·properties)은 원격을 기본값으로 하고, 로컬 구동에 필요한 옵션만 fetch 뒤 다시 적용한다(조직 고유 보안 토글, 예: NPROTECT·ANYID, 은 RL-12 방식만). | CS-09, RL-12 |
 | 직접 구현하지 않는 프로젝트(member·settlement·catalog)의 `.metrics/`는 커밋하지 않고 버린다. | WT-13 |
 | `git stash push -u`를 pathspec 없이 쓰지 않는다. | CS-07 |
-| 수동 `git worktree add`를 쓰지 않고 `new-worktree.ps1`을 쓴다. 새 브랜치에 업스트림을 설정하지 않는다. | WT-03, WT-04 |
+| 수동 `git worktree add`를 쓰지 않고 `worktree` 스킬(`new_worktree.py`)을 쓴다. 새 브랜치에 업스트림을 설정하지 않는다. | WT-03, WT-04 |
 | 서버 빌드·구동을 `gradlew`/`bootRun`으로 직접 조립하지 않는다. | WT-11 |
 | 파일·폴더는 휴지통 이동으로 지우고(영구 삭제는 확인 후), 공용 산출 폴더의 상위 폴더는 통째로 지우거나 비우고 다시 만들지 않는다. | GL-28 |
 | 커밋 메시지에 AI 귀속 문구를 붙이지 않는다(이 팀 결정 — 팀마다 정하고, 금지면 Claude Code `attribution` 설정으로 끈다). | CM-11 |

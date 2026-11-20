@@ -37,20 +37,20 @@ WT-01 면제 대상을 제외하고, 어떤 작업이든(화면 구현에 국한
 
 ### WT-03 · 워크트리는 스크립트로만 만든다
 
-- 위 1~4번은 `<공유문서 루트>\scripts\worktree\new-worktree.ps1`로 한 번에 수행한다.
+- 위 1~4번은 `worktree` 스킬로 한 번에 수행한다(Windows는 `python3` 대신 설치된 Python 명령, 예: `python`·`py`).
   ```
-  new-worktree.ps1 -Project <자기 프로젝트 폴더명> -Branch <브랜치명> -Name <워크트리명>
+  python3 "${CLAUDE_PLUGIN_ROOT}/skills/worktree/new_worktree.py" --project <자기 프로젝트 폴더명> --branch <브랜치명> --name <워크트리명>
   ```
-- 기준 브랜치(`-Base`)는 생략하면 `-Branch`의 첫 구간에서 `<팀구분>/main`으로 정해진다(예: `team2/ghbaek_dev/...` → `team2/main`). 로컬에 그 브랜치가 없으면 `main`으로 대체하고 알린다(예: catalog).
+- 기준 브랜치(`--base`)는 생략하면 `--branch`의 첫 구간에서 `<팀구분>/main`으로 정해진다(예: `team2/ghbaek_dev/...` → `team2/main`). 로컬에 그 브랜치가 없으면 `main`으로 대체하고 알린다(예: catalog).
 - 스크립트는 `git fetch`로 원격을 확인하고, 로컬 기준 브랜치가 `origin`보다 뒤처져 있으면 브랜치를 만들지 않고 중단한다. 이때 로컬 기준 브랜치를 임의로 갱신하지 않고 사람(또는 2단계 RL-12 위임에 따라 qa-master)에게 확인받는다. **[사람 확인]**
 - `git fetch`가 실패하면(로그인 만료 등) 아무것도 만들지 않고 중단한다. 사람이 `! git -C <프로젝트 경로> fetch`로 한 번 로그인한 뒤 다시 실행한다.
 - 스크립트는 저장소 로컬 설정으로 `core.longpaths=true`를 켠다(WT-06).
 - 수동으로 `git worktree add`를 치지 않는다(sparse·env가 빠진다).
   - 예외: 읽기 전용 확인용 임시 detach 워크트리(`git worktree add --detach`, 예: API 명세 생성)는 수동으로 만들 수 있다. 커밋하지 않고 끝나면 즉시 `git worktree remove`로 지우며(GL-28·WT-14), 구현·수정 작업에는 쓰지 않는다. 이름은 짧게 한다(예: `t1`). 긴 이름은 Windows 260자 경로 제한에 걸려 체크아웃이 일부 실패할 수 있다(실제 사례 2026-10-28: `apispec-tmp-20261028`에서 긴 클래스명 소스 파일 미체크아웃, `t1`로 재생성해 해결, api-gen-master 보고).
 - 배경(bg) developer 세션을 띄우기 전에, **프로젝트 설정(`.claude/settings.json`)에 `worktree.bgIsolation`을 `"none"`으로 넣는다**(전역이 아닌 프로젝트별 — 하네스를 안 쓰는 저장소까지 가드가 풀리지 않도록). 이 값이 없으면 기본값 `"worktree"`가 bg 세션의 로컬 체크아웃(docs 원본 경로 포함) 쓰기를 막아, 세션을 `worktree-<랜덤이름>`으로 자동 격리한다. 그렇게 자동 격리된 세션을 발견하면 작업을 시작하지 않고 qa-master에게 보고한다.
-- 워크트리는 이 절의 `new-worktree.ps1`로만 만들고 `EnterWorktree` 도구로 만들거나 들어가지 않는다. 하네스 격리가 걸리면 docs 원본 경로 쓰기와 `new-worktree.ps1` 실행이 막힌다.
+- 워크트리는 이 절의 `worktree` 스킬로만 만들고 `EnterWorktree` 도구로 만들거나 들어가지 않는다. 하네스 격리가 걸리면 docs 원본 경로 쓰기와 `worktree` 스킬 실행이 막힌다.
 - 가드에 막혀도 Bash heredoc 등으로 우회하지 않고 qa-master에게 보고한다(2단계 RL-12).
-- 아래는 `new-worktree.ps1`이 내부에서 수행하는 순서이며 직접 실행하지 않는다. 순서가 중요하다: `git worktree add --no-checkout` → sparse 설정 → `git checkout`. sparse 설정 전에 checkout하면 파일이 전부 펼쳐졌다 지워져 상태가 꼬인다.
+- 아래는 `worktree` 스킬이 내부에서 수행하는 순서이며 직접 실행하지 않는다. 순서가 중요하다: `git worktree add --no-checkout` → sparse 설정 → `git checkout`. sparse 설정 전에 checkout하면 파일이 전부 펼쳐졌다 지워져 상태가 꼬인다.
 
 ### WT-04 · 업스트림을 설정하지 않는다
 
@@ -123,7 +123,7 @@ WT-01 면제 대상을 제외하고, 어떤 작업이든(화면 구현에 국한
   2. 그 세션에 사용이 끝났는지 묻는다(연결은 6단계 AG-02 승인과 AG-06 handshake 후).
   3. 사용이 끝났으면 그 서버를 종료하고 기본 포트로 재기동한다.
   4. 사용 중이면 사람에게 "끝날 때까지 기다렸다가 재기동할까요?"를 예/아니오로 묻는다.
-- 새 서버를 기동하기 직전(포트 확인 뒤)에 `memcheck` 스킬(`<공유문서 루트>\scripts\memcheck\memcheck.ps1`, 읽기 전용)로 여유 물리메모리와 java 프로세스별 사용량을 확인한다.
+- 새 서버를 기동하기 직전(포트 확인 뒤)에 `memcheck` 스킬(`${CLAUDE_PLUGIN_ROOT}/skills/memcheck/memcheck.py`, 읽기 전용)로 여유 물리메모리와 java 프로세스별 사용량을 확인한다.
   - 여유가 서버 기동 기준(2.5GB) 미만이어서 경고가 뜨면 AI가 혼자 진행하거나 중단하지 않고, 결과를 제시해 사람(또는 2단계 RL-12에 따라 qa-master)에게 진행 여부를 확인받는다. 점유 중인 java 서버가 다른 세션 것이면 종료하지 않고 위 점유 절차를 따른다.
   - 테스트·훅(gradle) 실행 전에도 같은 방식으로 확인하되 기준은 4.0GB다.
   - 이미 떠 있는 서버로 검증만 하는 경우(신규 기동 아님)는 적용하지 않는다.
@@ -222,7 +222,7 @@ WT-13를 마치고 **사람이 삭제를 확인한 뒤**(또는 qa-master가 승
 
 | 시점 | 확인할 것 | 어긋나면 |
 |---|---|---|
-| ① 워크트리 생성 직후 | `new-worktree.ps1`로 만들었는가(수동 `git worktree add` 금지), `git sparse-checkout list`에 `!/docs/`, 워크트리 `.claude\settings.local.json`에 `PRJ_METRICS_DIR`, **세션 셸에서 실제 값 출력**(PowerShell `$env:PRJ_METRICS_DIR`, bash `echo $PRJ_METRICS_DIR`)이 `{본인 경로}\.prj-ai-metrics\<프로젝트>`인지, `git branch -vv`에 추적 정보 없음 | 작업을 시작하지 않고 보고 |
+| ① 워크트리 생성 직후 | `worktree` 스킬로 만들었는가(수동 `git worktree add` 금지), `git sparse-checkout list`에 `!/docs/`, 워크트리 `.claude\settings.local.json`에 `PRJ_METRICS_DIR`, **세션 셸에서 실제 값 출력**(PowerShell `$env:PRJ_METRICS_DIR`, bash `echo $PRJ_METRICS_DIR`)이 `{본인 경로}\.prj-ai-metrics\<프로젝트>`인지, `git branch -vv`에 추적 정보 없음 | 작업을 시작하지 않고 보고 |
 | ② 산출물 쓰기 직전 | 쓰려는 경로가 원본 `<프로젝트>\docs\...`인가, 경로에 `.claude\worktrees`가 들어 있지 않은가 | 쓰지 않고 중단 후 보고 |
 | ③ 커밋 계획 제시 전 | 스테이징 후보에 `docs/`가 섞이지 않았는가, WT-13 일괄 커밋이 아닌 일반 커밋에 `.metrics/`가 섞이지 않았는가 | 계획에서 걸러내고 걸러낸 사실을 계획에 명시 |
 | ④ 작업 중 이상 신호 | 워크트리 안에 `.metrics/` 변경이나 `chore(metrics)` 자동커밋이 새로 생기면 env 누락 신호 | 임의로 원복하지 않고 보고 |
@@ -234,7 +234,7 @@ WT-13를 마치고 **사람이 삭제를 확인한 뒤**(또는 qa-master가 승
 
 - [ ] WT-01 작업이 면제 대상인지 판단했고, 애매하면 묻지 않고 워크트리를 만들었는가?
 - [ ] WT-02 화면 구현이 아닌 작업도 포함해, 시작 전에 `<팀구분>/main` 기준으로 새 브랜치를 만들고 그 브랜치로 만든 워크트리 안에서 작업했는가?
-- [ ] WT-03 `new-worktree.ps1`로 만들었는가(수동 `git worktree add` 없이)? 생성 직후 세션 셸에서 `PRJ_METRICS_DIR` 실제 값을 출력해 확인했는가(WT-16 ①)?
+- [ ] WT-03 `worktree` 스킬로 만들었는가(수동 `git worktree add` 없이)? 생성 직후 세션 셸에서 `PRJ_METRICS_DIR` 실제 값을 출력해 확인했는가(WT-16 ①)?
 - [ ] WT-04 새 브랜치를 `-t` 없이 만들고 `git branch -vv`로 추적 정보가 없음을 확인했는가?
 - [ ] WT-05 프로젝트 하위 `.claude\worktrees`에 만들었는가?
 - [ ] WT-06 워크트리명이 `{작업ID 압축}-{작업명}` 규칙을 따랐는가?
