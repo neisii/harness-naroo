@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 qa-inbox.py — QA 대기 장부 조회 (AG-15)
 

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Create a work branch + sparse worktree (AI-DLC step 12: WT-02/WT-03/WT-06).
 
 Cross-platform port of the original Windows `new-worktree.ps1`. Same behavior on

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """patrol-notify — "사람 응답 대기" 항목을 백오프 간격으로 OS 알림(os-notify)으로 알리는 결정론적 스크립트.
 

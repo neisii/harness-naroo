@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Cross-platform OS notification utility.
 Displays native notifications on Windows, macOS, and Linux.

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """pending-status-check — AG-15 대기 장부(*.json) 전체를 읽기 전용으로 집계해 텍스트(기본) 또는 --json 으로 출력한다.
 

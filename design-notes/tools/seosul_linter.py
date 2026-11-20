@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """seosul_linter — design-notes 전용 얇은 shim.
 

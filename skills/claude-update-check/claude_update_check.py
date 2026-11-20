@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """claude-update-check — Claude Code 새 버전 점검 + 사용자 결정 기록. 시스템을 바꾸지 않는다(설치·업데이트 없음,
 상태 파일에만 기록).

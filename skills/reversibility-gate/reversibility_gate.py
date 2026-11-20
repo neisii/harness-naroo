@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """reversibility_gate — 가역성 분류표(07)의 실행 가능한 라우터 + 판정 근거 기록.
 

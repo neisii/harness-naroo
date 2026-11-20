@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """seosul_lint — 서술 규칙 위반을 찾는 읽기 전용 린터(한국어 글쓰기용).
 

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """session-wake — 이름으로 bg 세션을 복사본 없이 깨운다.
 

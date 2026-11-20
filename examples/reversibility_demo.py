@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """reversibility_demo — "5분 입구" 1부: 가역성 분류표(07)를 예시 4~5개로 보여준다.
 
