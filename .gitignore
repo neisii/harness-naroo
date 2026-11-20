@@ -24,3 +24,7 @@ node_modules/
 
 # Claude Code local/session artifacts (not part of the plugin)
 .claude/settings.local.json
+
+# Editor swap files
+*.swp
+*.swo
