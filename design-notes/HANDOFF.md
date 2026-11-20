@@ -170,7 +170,7 @@
 - 세션은 다른 세션이 SendMessage로 보낸 push 요청을 스스로 거부했다(권한 세탁 방지). 시험이 필요하면 `claude --bg --resume <세션ID> "<지시>"`로 사용자 입력으로 준다.
 - 시험 세션 정리: `claude stop` 뒤 `claude rm <id>`(목록·job 기록 삭제, 대화 기록은 남김) → 대화 기록 폴더는 safe-delete. 반복문 안의 `claude stop`은 입력을 붙잡으니 `</dev/null`을 붙인다.
 - 게이트웨이 화면의 "Compacted while idle"은 유휴 중 자동 압축이지 재시작이 아니다(E-4 판정을 이것 때문에 틀렸다가 정정).
-- **로컬 시범 훅 2개**(`.claude/settings.local.json`, 비추적): ① `PostToolUse` — md를 쓰면 seosul-lint 결과를 바로 보여 줌 ② `SessionStart`(`startup|clear|compact`) — 시작 안내(0번 표시·핸드오프·`리로드:` 줄·남은 예약 확인). 둘 다 동작 확인.
+- **로컬 시범 훅 2개**(`.claude/settings.local.json`, 비추적): ① `PostToolUse` — md를 쓰면 seosul-lint 결과를 바로 보여 줌 ② `SessionStart`(`startup|clear|compact`) — 시작 안내(0번 표시·핸드오프·`리로드:` 줄·남은 예약 확인). 둘 다 동작 확인. 자리를 비운 사이 자동 압축(idle compaction)에도 `compact`로 걸린다(2026-11-20 실측: 12:30 이후 압축, 13:30 이후 첫 응답에 0번 표시가 나옴). 단 그때 1번(핸드오프 읽기)은 `리로드:` 줄만 찾고 전체를 읽지 않았다.
 
 **남은 할 일:**
 1. **E-7(PR·병합 구간)** — status-relay-rebuild의 세 작업(shutdown-sse·checker-shutdown·ci-readme)이 커밋까지 끝나고 push·PR은 사용자 지시 대기. 기록을 받으면 문서 10 부록 E에 쓰고, 끝내는 기준(침범 0·잘못된 승인 0·막힌 워커 발견)으로 스케일 개밥을 정리한다. B(막힌 워커 발견)는 지금까지 미달.
