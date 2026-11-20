@@ -136,7 +136,7 @@
 - 파일명: 05 = `…릴리스결정.md`, 06 = `…핵심과환경값.md`(둘 다 리네임 완료). 파일명 ≠ 표시 텍스트.
 - **단어 일괄 치환**의 상습 함정: ① 조사 깨짐(을→를, 이→가, 환경값로→으로) ② 볼드 사이 걸림(`조율 **배관` 같은 `**` 삽입). 치환 후 반드시 재점검.
 - 린터의 2글자 부분문자열 매칭 오탐(`부분배포`→분배, `레버리지`→레버)은 수용(사람 검토용).
-- **설치본은 스냅샷이다(2026-11-14 도그푸드에서 확인):** `/plugin install`은 저장소를 live로 안 읽고 `~/.claude/plugins/cache/<마켓>/<플러그인>/<version>/`에 **사본**을 뜬다. `/reload-plugins`로는 안 따라옴. 저장소 변경을 설치본에 반영하려면 ① `plugin.json` **version bump** + ② 사용자가 **uninstall/reinstall**(또는 update). **version을 안 올리면 같은 번호라 update가 조용히 skip**돼 stale로 남는다 — 그래서 의미 있는 규칙 변경 때마다 version을 올린다.
+- **설치본은 스냅샷이다 — GitHub 마켓일 때(2026-11-14 도그푸드에서 확인). 로컬 폴더 마켓이면 `/reload-plugins`가 폴더를 직접 다시 읽으므로 해당 없음(2026-11-20 확인):** `/plugin install`은 저장소를 live로 안 읽고 `~/.claude/plugins/cache/<마켓>/<플러그인>/<version>/`에 **사본**을 뜬다. `/reload-plugins`로는 안 따라옴. 저장소 변경을 설치본에 반영하려면 ① `plugin.json` **version bump** + ② 사용자가 **uninstall/reinstall**(또는 update). **version을 안 올리면 같은 번호라 update가 조용히 skip**돼 stale로 남는다 — 그래서 의미 있는 규칙 변경 때마다 version을 올린다.
 
 ## 11. 지금 이어가기 (추천 첫 수)
 
@@ -147,7 +147,7 @@
 
 판단이 안 서면(사용자가 직접 설치·업데이트했을 수 있음) 사용자에게 묻고 적는다. 다음 세션은 SessionStart 훅 안내 2번에 따라 이 줄을 읽는다.
 
-리로드: 필요 — /reload-plugins (skills/ 변경: 새 스킬 survey-gen·server-ops, session-wake SKILL.md 가이드 추가, seosul-lint 사전 35·36·29번, 앞 세션의 dlc-gate·shebang 제거·사전 31~33 포함. 설치본은 버전별 사본이라 먼저 `plugin.json` 버전을 올리고 `claude plugin update` 뒤 리로드해야 반영된다. 버전 올리기는 출시 점검표의 출시 절차에서 한다)
+리로드: 필요 — 세션마다 `/reload-plugins`(또는 새 세션 시작). 지금 마켓은 로컬 폴더라 `/reload-plugins`가 저장소 폴더를 직접 다시 읽는다(2026-11-20 밤 게이트웨이에서 확인: "re-read from its folder", 하네스 스킬 15개). 버전 올리기·`claude plugin update`는 로컬 폴더 마켓에선 필요 없다. `plugin.json`은 0.2.0-rc.2로 올려 두었다(불필요했지만 해 없음). 마켓을 GitHub로 되돌린 뒤에는 아래 "설치본은 스냅샷" 절차를 따른다.
 
 **현재 상태(2026-11-20 밤):** `0.2.0` 브랜치, 작업 트리 깨끗, 로컬 커밋이 원격보다 앞섬(미푸시). **남은 일은 전부 출시 점검표 한 장에 있다 → [`tasks/release-0.2.0/checklist.md`](./tasks/release-0.2.0/checklist.md).** 관문 2는 `python3 design-notes/tools/release_check.py`로 잰다(2026-11-20 밤: 실패 1 — 규칙이 원본 도구 9종을 표시 없이 부름).
 
