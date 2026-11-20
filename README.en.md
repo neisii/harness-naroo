@@ -102,6 +102,7 @@ Also standalone — the Korean-prose linter: `python3 skills/seosul-lint/seosul_
 | `skills/session-wake/` | Wake a named background session without creating a duplicate; launch options are restored |
 | `skills/qa-inbox/` · `skills/pending-status-check/` | Read-only views of the inter-session waiting ledger (AG-15) |
 | `skills/patrol-notify/` · `skills/os-notify/` | Back-off notifications for "waiting on a human" items; native OS notification primitive |
+| `skills/survey-gen/` | Batch the decisions a human must make into one HTML survey; record the answers and track them until applied (`docs/surveys/`) |
 
 **Utilities**
 
@@ -110,6 +111,7 @@ Also standalone — the Korean-prose linter: `python3 skills/seosul-lint/seosul_
 | `skills/seosul-lint/` | Korean prose linter, dictionary-driven — swap the dictionary for your own rules |
 | `skills/worktree/` | Work branch + sparse worktree per the WT rules |
 | `skills/memcheck/` | Free-memory check before starting servers/tests |
+| `skills/server-ops/` | Register, build, start, stop and inspect servers. Spring Boot + Gradle projects only (refuses and tells you otherwise) |
 | `skills/safe-delete/` | Move to trash instead of permanent delete, with guards |
 | `skills/claude-update-check/` | Check for a new Claude Code version and record a decision (never installs) |
 

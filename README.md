@@ -105,6 +105,7 @@ python3 examples/reversibility_demo.py
 | `skills/session-wake/` | 이름으로 백그라운드 세션을 복사본 없이 깨움. 처음 띄울 때의 옵션이 그대로 살아남 |
 | `skills/qa-inbox/` · `skills/pending-status-check/` | 세션 간 대기 장부(AG-15) 읽기 전용 조회 |
 | `skills/patrol-notify/` · `skills/os-notify/` | "사람 응답 대기" 항목 알림(간격을 점점 늘림), OS 알림 기본 도구 |
+| `skills/survey-gen/` | 사람에게 물을 결정을 모아 HTML 설문 하나로 묻고, 답을 받아 저장·반영 완료까지 관리(`docs/surveys/`) |
 
 **보조 도구**
 
@@ -113,6 +114,7 @@ python3 examples/reversibility_demo.py
 | `skills/seosul-lint/` | 한국어 서술 린터. 사전 파일만 바꾸면 다른 팀 규칙에도 씀 |
 | `skills/worktree/` | WT 규칙대로 작업 브랜치 + sparse 워크트리 생성 |
 | `skills/memcheck/` | 서버·테스트 시작 전 여유 메모리 점검 |
+| `skills/server-ops/` | 서버 등록·빌드·구동·종료·상태 조회. Spring Boot + Gradle 프로젝트 전용(맞지 않으면 실행하지 않고 알림) |
 | `skills/safe-delete/` | 영구 삭제 대신 휴지통으로, 보호 폴더 가드 포함 |
 | `skills/claude-update-check/` | Claude Code 새 버전 점검과 결정 기록(설치는 하지 않음) |
 
