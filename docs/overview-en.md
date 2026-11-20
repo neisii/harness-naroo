@@ -69,6 +69,28 @@ Rather than one overloaded session, responsibilities are split:
 
 This is what removed the "everything funnels through one session" bottleneck.
 
+### Small mode (0.2.0) — multiple sessions without the full setup
+
+The full setup above assumes infrastructure a solo developer or small team won't have: a dedicated
+`qa-master`, a waiting ledger, a patrol loop. Version 0.2.0 adds a **small mode** that needs none of it:
+
+```
+human (decides)  →  gateway session (relays & watches)  →  worker sessions (implement)
+```
+
+- The **gateway is a communication window, not a gate.** It creates and stops worker sessions, relays the
+  human's approvals **verbatim**, watches progress, and escalates anything not on its written delegation list.
+  The human stands in for `qa-master`, the ledger, and patrol.
+- **Gateway ≠ worker**, so no session approves its own work.
+- **Optional narrow delegation:** the gateway may approve commit plans (CS-01) and requirement-vs-result checks
+  (CM-01) — reversible, rule-checkable gates — but only after its own check **and** a fresh-context
+  re-verification both pass. Blueprint approval, push/PR/merge, irreversible git, and business decisions stay
+  with the human. A one-time instruction ("merge this PR") never becomes a standing permission.
+- **Dogfooded** on a real repository: a gate round-trip, two narrow-delegation runs, and a three-worker run
+  through blueprint, PR, merge, and cleanup — no lane violations and no wrong approvals. Samples are still small.
+- Guide (Korean): [`오케스트레이션-구성.md`](./오케스트레이션-구성.md) · delegation record template:
+  [`위임기록-템플릿.md`](./위임기록-템플릿.md).
+
 ## Cases that shaped it
 
 These ran on the original project. The pipelines themselves are **described here, not shipped as runnable
