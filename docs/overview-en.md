@@ -127,7 +127,7 @@ code**, because they were tightly coupled to the project's database, document sy
 | `docs-consolidate` | Tied to the project's document taxonomy (templates, policy/screen IDs) |
 | `api-spec-gen` | Service list hardcoded to the project's modules |
 | `common-code-sync` | Specific to the project's dev DB tables |
-| `blueprint-index` / `index-refresh` / `survey-gen` | Assume the project's `docs/` inventory layout |
+| `blueprint-index` / `index-refresh` | Assume the project's `docs/` inventory layout (`survey-gen` was rebuilt for the public edition in 0.2.0) |
 | `ops-report` (patrol hub) | Windows Task Scheduler + PowerShell notifier |
 | Status widgets (memory / pending / usage), tray | Unsigned Windows `.exe` / C# — excluded on principle |
 
