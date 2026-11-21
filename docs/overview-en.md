@@ -101,7 +101,8 @@ human (decides)  →  gateway session (relays & watches)  →  worker sessions (
   decisions, merge, delegation scope) by the gates in the delegation record rather than by permission prompts.
   `acceptEdits` with an allowlist is the conservative option.
 - **Check before sending.** Idle background workers get cleaned up, which is normal. Before relaying, the
-  gateway runs `session-stall-check`; if the worker is waiting on a human it tells the human instead, and if
+  gateway runs `session-stall-check`; if the worker is stuck on a dialog such as a permission prompt it tells
+  the human instead (only a person who opens that session can answer it), and if
   there is no process it revives the worker with `session-wake` first.
 - **Push is not left to workers.** Push and PRs are the human's (the gateway does them on the human's
   instruction); direct and force pushes to main are blocked by GitHub branch protection, not by command options.
@@ -146,7 +147,8 @@ code**, because they were tightly coupled to the project's database, document sy
    status looked normal and no alert fired. Response in three layers: **prevent** (mandatory 3-line task
    instructions), **block** (disable the interactive question window), **detect** (watch for inactivity). The
    portable [`session-stall-check`](../skills/session-stall-check) skill generalizes the detect layer: it
-   classifies a session from `claude agents` state·status·pid (waiting on a human / working / idle / no process).
+   classifies a session from `claude agents` state·status·pid·waitingFor (stuck on a dialog / waiting for a reply
+   / working / idle / no process).
 
 3. **Decision-session bottleneck (BOTTLENECK).** The decision session was also doing patrols, tallies, and
    tool-building. Mechanical work was automated (a patrol ran ~254 times over ~40h, surfacing only urgent

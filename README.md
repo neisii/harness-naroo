@@ -169,7 +169,7 @@ python3 skills/seosul-lint/seosul_lint.py <문서 폴더>
 
 | 경로 | 내용 |
 |---|---|
-| `skills/session-stall-check/` | 세션이 사람 입력 대기인지, 작업 중인지, 지시 대기인지, 프로세스가 없는지 판정(`claude agents`의 state·status·pid). 재요청할지·사람에게 알릴지·깨울지까지 알려 줌 |
+| `skills/session-stall-check/` | 세션이 창 대기(권한 창 등)인지, 답 대기인지, 작업 중인지, 지시 대기인지, 프로세스가 없는지 판정(`claude agents`의 state·status·pid·waitingFor). 재요청할지·사람에게 알릴지·깨울지까지 알려 줌 |
 | `skills/session-wake/` | 이름으로 백그라운드 세션을 복사본 없이 깨움. 처음 띄울 때의 옵션이 그대로 살아남 |
 | `skills/qa-inbox/` · `skills/pending-status-check/` | 세션 간 대기 장부(AG-15) 읽기 전용 조회. 완전형용이라 소규모 모드에선 쓰지 않음(대기 장부 일반화는 0.4.0) |
 | `skills/patrol-notify/` · `skills/os-notify/` | "사람 응답 대기" 항목 알림(간격을 점점 늘림), OS 알림 기본 도구. 순찰은 완전형용이라 소규모 모드에선 쓰지 않음(일반화는 0.5.0) |
