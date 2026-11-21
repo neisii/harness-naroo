@@ -76,7 +76,7 @@ WT-01 면제 대상을 제외하고, 어떤 작업이든(화면 구현에 국한
 
 | 작업ID | 압축 | 워크트리명 |
 |---|---|---|
-| `screen-020` | `b-m-i-deliveryRequestDetail` | `b-m-i-deliveryRequestDetail-{작업명}` |
+| `buy-mydesk-inspection-deliveryRequestDetail` | `b-m-i-deliveryRequestDetail` | `b-m-i-deliveryRequestDetail-{작업명}` |
 
 - 긴 경로 오류를 막기 위해 git 명령에 `core.longpaths=true`를 기본값으로 쓴다(`-c core.longpaths=true` 또는 저장소 로컬 설정, 커밋과 무관). 이 설정에서는 `git status`가 긴 경로 파일을 `AM`으로 잘못 표시하므로 `git add -A`와 `git commit -a`는 쓰지 않는다.
 
