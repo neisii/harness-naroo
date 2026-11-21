@@ -208,12 +208,15 @@
 - 연결/영향: `skills/session-stall-check/`, 가이드 `docs/오케스트레이션-구성.md` 4걸음, 순찰(0.5.0). auto 모드를 기본으로 하면 권한 창 자체가 드물어져 급하지 않다.
 - 상태: **완료(2026-11-22, 0.2.1).** 시험 세션으로 실측 — 권한 창: `state=blocked`·`status=waiting`·`waitingFor="permission prompt"`, 답 대기: `state=blocked`·`status=idle`·`waitingFor` 없음. 스킬은 "창 대기"(메시지 안 들어감, 사람이 세션을 열어 답)와 "답 대기"(메시지를 보내면 깨어남)로 나눠 판정. 6단계 AG-15 재요청 절차·가이드·README도 맞춤. 기록 `tasks/session-stall-check-waitingfor/`.
 
-## T16 — 공식 디렉터리용 스크립트 없는 축소판  — 신규 (0.2.0 출시 뒤)
+## T16 — 공식 디렉터리용 스크립트 없는 축소판  — 닫음 (2026-11-22, 사용자 결정: 공식 디렉터리 등록 포기)
 
-- 배경: 2026-11-22 공식 디렉터리 재제출에서 "스크립트·프로그램은 Verified 조직에게서만 받는다"로 막힘. 받는 파일은 Markdown·텍스트·JSON·YAML·지정 이미지뿐. 하네스는 스킬 스크립트(`.py`)가 핵심이라 저장소 그대로는 올릴 수 없다. 사용자 결정으로 디렉터리 등록은 접고 직접 설치로 배포.
-- 핵심 질문: 디렉터리 안내("plugin을 하위 폴더에 두고 그 폴더를 제출")대로, 규칙(`rules/`)과 Markdown만으로 도는 스킬만 담은 축소판을 따로 낼 가치가 있나. 빠지는 것(가역성 판정·린터·세션 도구 등 스크립트 스킬)을 감수할 만큼 발견 경로가 중요한가.
-- 함께 볼 것: 보류 2건 — 자격증명(AG-08 `devdb_readonly.env`)을 읽는 규칙, 문서 속 설치 명령(2026-11-22 공식 안내 링크로 바꿈). Verified 조직 요청은 "Help & appeals" 페이지에서 가능한지 사용자가 확인.
-- 상태: 열림 (공개 뒤 논의)
+- 결론: 공식 디렉터리 등록은 하지 않는다. 배포는 직접 설치(`/plugin marketplace add neisii/harness-naroo`)로만 한다.
+- 근거로 확인한 사실(다시 꺼낼 때 참고):
+  - 디렉터리는 Verified 조직이 아니면 **제출한 플러그인 폴더 안의 스크립트 파일을 위치와 상관없이 받지 않는다.** 실험 브랜치에서 `design-notes/tasks`·`design-notes/tools`·`examples`의 스크립트를 차례로 빼도 다음 파일이 걸렸고, 마지막엔 `skills/` 안 스크립트가 걸렸다. 화면은 한 번에 한 파일만 보여 준다.
+  - 디렉터리는 `marketplace.json`의 `source`가 가리키는 폴더만 검사한다. 우리는 `"source": "."`라 저장소 전체가 검사 대상이다.
+  - 개인 community 플러그인 megapowers(github.com/lawzava/megapowers)는 플러그인을 하위 폴더(`plugins/megapowers/`, Markdown·JSON·YAML만)에 두고, 만든 사람용 도구(`scripts/`)와 원래 스킬이 쓰던 Go 도우미(`extras/scripts/`)를 플러그인 밖으로 뺐다. 스킬은 스크립트 대신 "Claude가 기본 도구로 하는 수동 절차"로 고쳐 썼다.
+  - 우리 스킬은 스크립트 실행(결정론적 판정·린터·설문 생성)이 핵심이라, 같은 길을 가면 "투명한 규율, 결정론"이 약해진다.
+- 상태: 닫음
 
 ## (양식) 새 논제 추가 시
 
