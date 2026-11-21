@@ -45,7 +45,7 @@ python ... --status                 # 상태 파일 요약, 점검 안 함
 ## 승인 후 설치 절차
 설치는 AI가 하지 않는다. 사용자가 모든 세션을 종료한 상태에서 직접 설치한다.
 1. 사용자가 모든 Claude Code 세션을 종료한다.
-2. 사용자가 프롬프트에서 `!`로 직접 설치한다(npm 전역 설치 기준: `npm install -g @anthropic-ai/claude-code@<승인한 버전>`).
+2. 사용자가 [공식 설치 안내](https://code.claude.com/docs/en/setup)에서 설치한 방식(네이티브 설치·Homebrew·npm 등)에 맞는 방법으로, 승인한 버전을 직접 설치한다.
 3. `claude --version`과 `claude agents`가 정상인지 확인한다.
 4. `session-wake`로 필요한 세션을 재기동한다.
 5. `claude_update_check.py --force`로 현재 버전이 승인한 버전이 되었는지 확인한다.
