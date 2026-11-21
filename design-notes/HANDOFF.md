@@ -148,9 +148,16 @@
 
 판단이 안 서면(사용자가 직접 설치·업데이트했을 수 있음) 사용자에게 묻고 적는다. 다음 세션은 SessionStart 훅 안내 2번에 따라 이 줄을 읽는다.
 
-리로드: 불필요 (2026-11-21 저녁 gate3 세션은 스킬 코드·SKILL.md·rules를 안 건드림. 바꾼 건 seosul-lint 사전 `skills/seosul-lint/번역투-교정사전.md` 37번뿐이고, 스크립트가 실행할 때마다 사전을 읽으며 지금 마켓은 로컬 폴더라 그대로 반영됨 — 시험 중 실무자 린터가 바로 잡는 것을 확인). 앞 세션의 `rules/`·스킬 변경은 그 세션에서 리로드함. 버전 올리기·`claude plugin update`는 로컬 폴더 마켓에선 필요 없다(`plugin.json`은 0.2.0-rc.2). 마켓을 GitHub로 되돌린 뒤에는 아래 "설치본은 스냅샷" 절차를 따른다.
+리로드: 필요 — `/reload-plugins` (2026-11-21 밤에 `skills/worktree/SKILL.md`·`new_worktree.py`를 고침, `--local-base`·`--no-metrics` 추가). 지금 마켓은 로컬 폴더라 `/reload-plugins`가 저장소 폴더를 직접 다시 읽는다. 버전 올리기·`claude plugin update`는 로컬 폴더 마켓에선 필요 없다(`plugin.json`은 0.2.0-rc.2). 마켓을 GitHub로 되돌린 뒤에는 아래 "설치본은 스냅샷" 절차를 따른다.
 
-**현재 상태(2026-11-21 밤):** `0.2.0` 브랜치, 관문 3 기록까지 푸시함(`33ef649`, push는 사용자 요청 때만). **관문 1·2·4 통과, 관문 3은 실행 완료 — "가이드 고친 뒤 통과"**(침범 0·잘못된 승인 0 통과, 한 방 작동, "가이드대로 했는데 막힌 곳"이 여럿이라 고칠 거리 5건). 기록 정본은 [`tasks/release-0.2.0/gate3-관측기록.md`](./tasks/release-0.2.0/gate3-관측기록.md) 맨 위 "판정" 절, 점검표는 [`tasks/release-0.2.0/checklist.md`](./tasks/release-0.2.0/checklist.md). 관문 2는 `python3 design-notes/tools/release_check.py`로 잰다(2026-11-21: 실패 0).
+**현재 상태(2026-11-21 밤 늦게):** `0.2.0` 브랜치(push는 사용자 요청 때만, `git status -sb`로 미푸시 확인). **관문 1·2·4 통과, 관문 3은 실행 뒤 고칠 거리 5건을 처리해 통과로 봄** — 남은 것은 출시 절차. 관문 3 기록 [`tasks/release-0.2.0/gate3-관측기록.md`](./tasks/release-0.2.0/gate3-관측기록.md), 점검표 [`tasks/release-0.2.0/checklist.md`](./tasks/release-0.2.0/checklist.md). `release_check.py` 실패 0(2026-11-21 밤).
+
+**이번 세션(2026-11-21 밤 늦게, 관문 3 고칠 거리 처리)에 정한 것 (재논의 불필요):**
+- **권한 모드 기본값 = auto**(사용자 결정, 비교표 1안). 꼭 막을 것은 GitHub 브랜치 보호·pre-push 기밀 훅·commit-msg 훅, 결정은 위임기록 게이트. `acceptEdits`+허용 목록은 "처음 쓰거나 조심할 환경"용 보수적 선택지로 가이드에 남김. 고친 곳: 가이드 `docs/오케스트레이션-구성.md` 3·4걸음·좁은 위임 절·실전 이력, 위임기록 템플릿(선택 항목 2개: 문구 보정 후 승인, 청사진에서 정한 예외 유지).
+- **WT-02 4번·WT-16 ①의 PRJ_METRICS_DIR은 메트릭 원장 쓰는 팀만**(환경값 A에 "메트릭 원장 없음" 선언). **CS-09의 README·.gitignore·.github·Dockerfile·빌드 스크립트는 원본 팀 관행** — 제외 목록은 환경값 C에 선언, 없으면 핵심 원리만.
+- **worktree 스킬 `--local-base`**(원격에 없음을 fetch로 확인한 뒤만, 원격에 있으면 거부)·**`--no-metrics`**. 새 맥락 재검증 1차 조건부(원격에만 있는 브랜치로 뒤처짐 검사 우회 가능) → 고침 → 2차 통과. 작업 기록 `tasks/worktree-local-base/`.
+- **pre-push 훅 `--git-common-dir`**(워크트리에서 push해도 블록리스트를 찾음). 로컬 `.git/hooks/pre-push` 두 곳(harness-naroo·gate3-trial)을 고치고 임시 저장소로 시험. **비공개 원본(`공개전_유의사항.md`)에는 훅 코드가 없다** — 새 클론에 훅을 다시 설치할 원본이 없는 셈이니, 훅 본문을 비공개 원본에 옮겨 둘지는 사용자 몫.
+- session-stall-check의 "권한 창 대기 / 게이트 답 대기" 구분은 backlog **T15**로(auto 기본이면 급하지 않음).
 
 **이번 세션(2026-11-21 저녁, 관문 3 실행)에 정한 것·알게 된 것 (재논의 불필요, 근거는 gate3-관측기록):**
 - **테스트베드:** 공개 저장소 `neisii/gate3-trial`(실전 예제로 남김, 실패해도 공개에 사용자 동의). 로컬 `~/Development/gate3/gate3-trial`, 관측 노트 원본 `~/Development/gate3/observer/`(저장소 밖, 시험 중 실무자에게 안 보이게). 작업: 주문 처리 미니 시스템, W0 뼈대 → W1 부분취소·W2 매출·W3 알림 동시 → 후속 W2PC·W3PC. 함정(공통 코드 `부분취소`가 W2·W3을 깨뜨림)은 관측자만 앎. 최종 main `eddc8ba`, 테스트 90건 통과, 원격엔 main만, 세션·워크트리·작업 브랜치 정리 끝(대화 기록 `~/.claude/projects/-Users-neisii-Development-gate3-gate3-trial/`은 집계 근거로 남김).
@@ -215,7 +222,7 @@
 - **로컬 시범 훅 2개**(`.claude/settings.local.json`, 비추적): ① `PostToolUse` — md를 쓰면 seosul-lint 결과를 바로 보여 줌 ② `SessionStart`(`startup|clear|compact`) — 시작 안내(0번 표시·핸드오프·`리로드:` 줄·남은 예약 확인). 둘 다 동작 확인. 자리를 비운 사이 자동 압축(idle compaction)에도 `compact`로 걸린다(2026-11-20 실측: 12:30 이후 압축, 13:30 이후 첫 응답에 0번 표시가 나옴). 단 그때 1번(핸드오프 읽기)은 `리로드:` 줄만 찾고 전체를 읽지 않았다.
 
 **남은 할 일:** 출시 점검표(`tasks/release-0.2.0/checklist.md`)가 정본. 요약:
-1. **관문 3 마무리 — 고칠 거리 5건**(gate3-관측기록 "고칠 거리"): ① WT-16 ①(PRJ_METRICS_DIR)을 메트릭 장치 쓰는 팀만 — 환경값 A ② CS-09 추적 제외의 README.md를 환경값으로 ③ 가이드 `docs/오케스트레이션-구성.md` 개정(권한 모드 기본값 auto 여부, 시작 지시에 하네스·스킬 경로, 반복 명령 허용 규칙, "변수·cd 쓰지 마라", 권한 창 실무자 감지, stall-check가 게이트 대기와 권한 창 구분, 재검증자에 safe-delete, 위임 확장 범위) ④ pre-push 훅 `--git-common-dir`(로컬 `.git/hooks`와 비공개 원본, gate3-trial 사본) ⑤ worktree 스킬이 로컬 브랜치를 기준으로. 고친 뒤 관문 3 통과로 본다(재시험 여부는 사용자와 정함).
+1. **(완료) 관문 3 고칠 거리 5건** — 위 "이번 세션(밤 늦게)" 참고. 관문 3을 새 판으로 다시 시험할지는 사용자와 정한다(권장하지 않음: 바뀐 것은 가이드·환경값·스킬 옵션이고 각각 시험·재검증을 거침).
 2. **출시 절차:** `plugin.json` 0.2.0 → PR·병합 → 태그 `v0.2.0` → 공식 디렉터리에 다시 제출(shebang 뺀 판) → 마켓을 GitHub로 되돌리고 재설치·리로드.
 3. 작은 것: commit-msg 훅 오탐, 시작 안내 훅 문구.
 4. 공개 뒤: backlog T11(다른 빌더)·T12(html 변환 스킬)·T13(공식 활용 안내 글과 비교)·T14(세션 단계 구분, 0.7.0). BR-03 유연화 고민(backlog T8 줄). 다음 버전은 0.3.0 = 통합·릴리스 흐름 + 얽힘 대응 + "검증 끝남" 표시 + E-7 충돌 판정(문서 10 §10).
@@ -229,4 +236,4 @@
 
 **알아 둘 함정 (이번 세션):** 이 셸은 zsh라 `for f in $변수`·`P="cmd"; $P`가 단어로 나뉘지 않는다(점검이 조용히 0건으로 끝남). 함수나 Python으로 돌린다. `git diff --name-only`는 한글 경로를 8진수로 바꾸니 `-c core.quotepath=false -z`를 쓴다.
 
-**새 세션 첫 수:** 이 핸드오프 → `git status -sb`(미푸시 커밋 확인, push는 사용자 요청 때만) → 출시 점검표 → `tasks/release-0.2.0/gate3-관측기록.md` "판정" 절 → 사용자와 고칠 거리 5건의 순서를 정한다. 가장 큰 결정은 "가이드의 권한 모드 기본값을 auto로 바꿀지"(acceptEdits+허용 목록은 보수적 선택지로).
+**새 세션 첫 수:** 이 핸드오프 → `git status -sb`(미푸시 커밋 확인) → `/reload-plugins` 했는지 확인 → 출시 점검표 "출시 절차"(1~6) → 사용자와 출시 진행 여부를 정한다.
