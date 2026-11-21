@@ -4,7 +4,7 @@
 
 ## 1. 한눈에
 
-- **레포:** github.com/neisii/harness-naroo (공개, `main`). 작업 브랜치 `0.2.0`(2026-11-21 밤 관문 3 기록까지 푸시, 원격과 같음). push는 사용자 요청 때만. 관문 3 실전 예제 저장소: github.com/neisii/gate3-trial(공개).
+- **레포:** github.com/neisii/harness-naroo (공개, `main`). 작업 브랜치 `0.2.0`(2026-11-21 밤 관문 3 고칠 거리 처리까지 푸시, 원격과 같음). push는 사용자 요청 때만. 관문 3 실전 예제 저장소: github.com/neisii/gate3-trial(공개).
 - **두 층:** (a) 공개 플러그인 — 스킬 13개(+seosul-lint, +reversibility-gate) + `rules/`(S 차세대 하네스 정본). (b) `design-notes/` — 하네스 **다음 버전** 설계 방법론.
 - 이 핸드오프는 **(b) design-notes** 작업을 잇기 위한 것.
 - **사용자:** 백가희(neisii). 출처: S 차세대 **폐쇄망 SI**(익명화). 설계 노트에서 1인칭 "내" = 사용자.
@@ -148,9 +148,9 @@
 
 판단이 안 서면(사용자가 직접 설치·업데이트했을 수 있음) 사용자에게 묻고 적는다. 다음 세션은 SessionStart 훅 안내 2번에 따라 이 줄을 읽는다.
 
-리로드: 필요 — `/reload-plugins` (2026-11-21 밤에 `skills/worktree/SKILL.md`·`new_worktree.py`를 고침, `--local-base`·`--no-metrics` 추가). 지금 마켓은 로컬 폴더라 `/reload-plugins`가 저장소 폴더를 직접 다시 읽는다. 버전 올리기·`claude plugin update`는 로컬 폴더 마켓에선 필요 없다(`plugin.json`은 0.2.0-rc.2). 마켓을 GitHub로 되돌린 뒤에는 아래 "설치본은 스냅샷" 절차를 따른다.
+리로드: 불필요 (2026-11-21 밤 마지막 변경인 `skills/worktree/SKILL.md`·`new_worktree.py`는 그 세션에서 사용자가 `/reload-plugins`로 반영 완료, 그 뒤 플러그인·스킬 변경 없음). 지금 마켓은 로컬 폴더라 `/reload-plugins`가 저장소 폴더를 직접 다시 읽는다. 버전 올리기·`claude plugin update`는 로컬 폴더 마켓에선 필요 없다(`plugin.json`은 0.2.0-rc.2). 마켓을 GitHub로 되돌린 뒤에는 아래 "설치본은 스냅샷" 절차를 따른다.
 
-**현재 상태(2026-11-21 밤 늦게):** `0.2.0` 브랜치(push는 사용자 요청 때만, `git status -sb`로 미푸시 확인). **관문 1·2·4 통과, 관문 3은 실행 뒤 고칠 거리 5건을 처리해 통과로 봄** — 남은 것은 출시 절차. 관문 3 기록 [`tasks/release-0.2.0/gate3-관측기록.md`](./tasks/release-0.2.0/gate3-관측기록.md), 점검표 [`tasks/release-0.2.0/checklist.md`](./tasks/release-0.2.0/checklist.md). `release_check.py` 실패 0(2026-11-21 밤).
+**현재 상태(2026-11-21 밤 늦게):** `0.2.0` 브랜치, 원격과 같음(이 세션 마지막 커밋까지 push함, push는 사용자 요청 때만). **관문 1·2·4 통과, 관문 3은 실행 뒤 고칠 거리 5건을 처리해 통과로 봄** — 남은 것은 출시 절차. 관문 3 기록 [`tasks/release-0.2.0/gate3-관측기록.md`](./tasks/release-0.2.0/gate3-관측기록.md), 점검표 [`tasks/release-0.2.0/checklist.md`](./tasks/release-0.2.0/checklist.md). `release_check.py` 실패 0(2026-11-21 밤).
 
 **이번 세션(2026-11-21 밤 늦게, 관문 3 고칠 거리 처리)에 정한 것 (재논의 불필요):**
 - **권한 모드 기본값 = auto**(사용자 결정, 비교표 1안). 꼭 막을 것은 GitHub 브랜치 보호·pre-push 기밀 훅·commit-msg 훅, 결정은 위임기록 게이트. `acceptEdits`+허용 목록은 "처음 쓰거나 조심할 환경"용 보수적 선택지로 가이드에 남김. 고친 곳: 가이드 `docs/오케스트레이션-구성.md` 3·4걸음·좁은 위임 절·실전 이력, 위임기록 템플릿(선택 항목 2개: 문구 보정 후 승인, 청사진에서 정한 예외 유지).
@@ -236,4 +236,4 @@
 
 **알아 둘 함정 (이번 세션):** 이 셸은 zsh라 `for f in $변수`·`P="cmd"; $P`가 단어로 나뉘지 않는다(점검이 조용히 0건으로 끝남). 함수나 Python으로 돌린다. `git diff --name-only`는 한글 경로를 8진수로 바꾸니 `-c core.quotepath=false -z`를 쓴다.
 
-**새 세션 첫 수:** 이 핸드오프 → `git status -sb`(미푸시 커밋 확인) → `/reload-plugins` 했는지 확인 → 출시 점검표 "출시 절차"(1~6) → 사용자와 출시 진행 여부를 정한다.
+**새 세션 첫 수:** 이 핸드오프 → `git status -sb`(원격과 같은지) → 출시 점검표 "출시 절차"(1~6) → 사용자와 출시 진행 여부를 정한다. 열린 질문 하나: pre-push 훅 본문을 비공개 원본(`공개전_유의사항.md`)에 옮겨 둘지(위 "이번 세션(밤 늦게)" 참고).
