@@ -1,17 +1,26 @@
-# Quickstart — feel it in ~5 minutes
+# 5분 맛보기 — 직접 실행해 보기
 
-This harness checks whether an agent's result keeps the **whole** coherent — not just whether one task "succeeded." That value really shows up inside a weeks-long project, so what follows is **two honest slices**, not a 5-minute summary of the whole thing.
+**한국어** · [English](./QUICKSTART.en.md)
 
-- **Part 1 — run it** (a rule deciding, deterministically, in one command)
-- **Part 2 — see it** (the same discipline catching its own author)
+이 하네스는 에이전트의 결과가 작업 하나의 성공에 그치지 않고 **전체**와 맞물리는지 확인합니다. 그 쓸모는 몇 주짜리 프로젝트 안에서 드러나기 때문에, 아래는 하네스 전체를 5분에 요약한 것이 아니라 지금 바로 실행해 볼 수 있는 **두 장면**입니다.
 
-한국어 요약은 [맨 아래](#한국어).
+- **1부 — 실행해 보기:** 규칙이 "혼자 해도 되나, 멈추고 물어야 하나"를 명령 하나로 판정하는 장면
+- **2부 — 보기:** 같은 규율이 규칙을 만든 사람의 글을 잡아내는 장면
+
+필요한 것은 Python 3뿐입니다(Windows에서는 `python3` 대신 `python`이나 `py`). 플러그인을 설치하지 않아도, 저장소를 복제하기만 하면 실행할 수 있습니다.
 
 ---
 
-## Part 1 — Run it: "do it alone, or stop and ask?"
+## 1부 — 실행해 보기: "혼자 해도 되나, 멈추고 물어야 하나"
 
-A runnable slice of the reversibility rule ([07](./design-notes/07-가역성분류표.md)). It takes five everyday situations and routes each to one of four outcomes — **A** do it / **B** do it, then report / **C** stop and get approval / **D** hold, it's unclear.
+가역성 기준([설계 문서 07](./design-notes/07-가역성분류표.md))을 실행해 볼 수 있게 만든 예제입니다. AI가 규칙에 정해 두지 않은 새 상황을 만났을 때, 다음 기준 4개로 판정합니다.
+
+- ① 되돌릴 수 있나
+- ② 요구가 명확한가
+- ③ 영향 범위(내 구역 안의 일인가, 남과 함께 쓰는 곳에 닿는가)
+- ④ 사람이 정할 업무 규칙과 관련 있나
+
+판정 결과는 넷 중 하나입니다. **A 자율 실행**(혼자 한다) · **B 사후 검수 + 알림**(하고 나서 알린다) · **C 사전 승인**(먼저 묻는다) · **D 보류·질의**(보류하고 묻는다).
 
 ```sh
 python3 examples/reversibility_demo.py
@@ -39,26 +48,28 @@ python3 examples/reversibility_demo.py
     → C 사전 승인   외부·공유인데 되돌릴 방법이 없다 → 보수적으로 멈추고 물어본다.
 ```
 
-**Watch case [3].** It is reversible, clear, and looks like "your call" — add up the points and you'd say "safe, just do it." But setting a discount rate is a **business decision**, so a single veto sends it to a human for approval instead of letting the agent go ahead on its own. That is the whole idea: not "did the task succeed," but "does this decision keep the whole coherent." **Points can't outvote a veto.**
+(출력의 "기반정보"는 ② 요구가 명확한가, "롤백"은 되돌리는 방법이 준비돼 있는가입니다.)
 
-How they land (top box = the three vetoes; only what clears them drops to the ③ adjust step):
+**[3]번을 보세요.** 할인율을 바꾸는 코드는 되돌릴 수 있고 요구도 명확합니다. 점수를 더하면 "안전하니 해도 된다"가 나올 상황입니다. 하지만 할인율은 사람이 정할 **사업 결정**이라, 거부권 하나에 걸려 사람의 승인을 받으러 갑니다. 기준 ①②④는 거부권이 있어서, 하나만 걸려도 다른 기준이 모두 괜찮은 것과 상관없이 멈춥니다. 이 하네스가 보는 것은 "작업이 성공했나"가 아니라 "이 결정이 전체와 맞는가"입니다.
+
+판정 순서는 이렇습니다. 위 상자(거부권 셋)를 먼저 보고, 셋을 모두 통과한 일만 아래 ③ 영향 범위로 조절합니다.
 
 ```mermaid
 flowchart TD
-  START["작업 하나<br/>(기준 4개를 self-assess)"]
-  subgraph STEP1["STEP 1 — 거부권 (하나만 걸려도 끝)"]
-    Q2{"② 뭘 하란 건지<br/>모호한가?"}
+  START["작업 하나<br/>(AI가 기준 4개를<br/>스스로 판정)"]
+  subgraph STEP1["STEP 1 — 거부권 (하나만 걸려도 멈춤)"]
+    Q2{"② 요구가<br/>모호한가?"}
     Q4{"④ 사람이 정할<br/>사업 결정인가?"}
-    Q1{"① 되돌릴 수 없나?<br/>(롤백 경로 없음)"}
+    Q1{"① 되돌릴 수<br/>없는 일인가?"}
   end
-  subgraph STEP2["STEP 2 — ③ 영향범위로 조절"]
-    Q3{"③ 내 구역 밖<br/>(외부·공유)?"}
-    RB{"되돌릴 방법<br/>등록됐나?"}
+  subgraph STEP2["STEP 2 — ③ 영향 범위로 조절"]
+    Q3{"③ 내 구역<br/>밖인가?"}
+    RB{"되돌릴 방법이<br/>준비돼 있나?"}
   end
-  A["A 자율 실행<br/>← [1] 오타 수정"]
-  B["B 사후 검수 + 알림<br/>← [2] 공용 유틸 로그"]
-  C["C 사전 승인<br/>← [3] 할인율·거부권 · [5] 롤백 없음"]
-  D["D 보류·질의<br/>← [4] '거기 그거'"]
+  A["A 자율 실행<br/>(혼자 한다)<br/>← [1] 오타 수정"]
+  B["B 사후 검수 + 알림<br/>(하고 나서 알린다)<br/>← [2] 디버그 로그"]
+  C["C 사전 승인<br/>(먼저 묻는다)<br/>← [3] 할인율<br/>← [5] 되돌릴<br/>방법 없음"]
+  D["D 보류·질의<br/>(보류하고 묻는다)<br/>← [4] 모호한 요구"]
   START --> Q2
   Q2 -->|예 · 거부권| D
   Q2 -->|아니오| Q4
@@ -67,14 +78,16 @@ flowchart TD
   Q1 -->|예 · 거부권| C
   Q1 -->|아니오| Q3
   Q3 -->|아니오| A
-  Q3 -->|예| RB
+  Q3 -->|예 · 외부·공유| RB
   RB -->|예| B
   RB -->|아니오| C
+  classDef out fill:#eef2ff,stroke:#4f46e5,color:#0f172a
+  class A,B,C,D out
 ```
 
-### ...and it records *why* — so "checkable" is output, not a promise
+### 판정 근거도 남긴다 — "확인할 수 있다"를 기록으로
 
-The gate doesn't just pick a letter; it leaves an **auditable record**. Run case [3] through the skill with `--json`:
+판정 도구는 A~D 가운데 하나를 고르는 데서 끝나지 않고, 나중에 다시 확인할 수 있는 **판정 근거**를 남깁니다. [3]번을 스킬에 `--json`으로 넣어 보면 이렇습니다.
 
 ```sh
 python3 skills/reversibility-gate/reversibility_gate.py \
@@ -98,59 +111,50 @@ python3 skills/reversibility-gate/reversibility_gate.py \
 }
 ```
 
-Later, a human (or `qa-master`) reads these records and catches "wait — that one was mine to decide," **not by re-reading the diff but from the gate's own evidence.** That is "keep the whole coherent, *and make it checkable*" as a real artifact — the core promise, running.
+나중에 사람(원본 사업의 전체 구성인 완전형이라면 `qa-master` 같은 전용 QA 세션)이 이 기록을 읽고 "이건 내가 정할 일이었는데"를 알아챕니다. 변경 내용을 처음부터 다시 읽지 않고, 판정이 남긴 근거만으로 알 수 있습니다. "전체와 맞는지 확인하고, 그 확인을 다시 따라갈 수 있게 한다"는 약속이 실제 기록으로 남는 것입니다.
 
-> A runnable slice of rule 07. **Real now:** the routing, the low-confidence bump, and the recorded evidence above. **Still deferred:** auto-detecting ③ scope from the worktree (self-assessed for now), and moving 07 into the published rule canon (at harness-build time). See [`design-notes/07-가역성분류표.md`](./design-notes/07-가역성분류표.md).
+> 지금 되는 것: 판정 순서, 확신도가 '낮음'이면 한 단계 보수적으로 판정하기, 위의 판정 근거 기록. 아직 안 된 것: ③ 영향 범위를 워크트리에서 자동으로 알아내기(지금은 AI가 스스로 판정), 가역성 기준을 정식 규칙(`rules/`)으로 넣기(0.6.0 예정, [로드맵](./design-notes/10-오케스트레이션-구성.md#10-버전-로드맵-020--100)). 설계는 [`design-notes/07-가역성분류표.md`](./design-notes/07-가역성분류표.md).
 
 ---
 
-## Part 2 — See it: the same check, on its own author
+## 2부 — 보기: 규칙을 만든 사람에게도 같은 점검
 
-The harness has a writing rule (no translationese, no emoji, 1st person). Its author is not exempt — the rule's own linter runs on the design notes:
+하네스에는 서술 규칙이 있습니다. 번역투·이모지·2인칭 호칭을 쓰지 않는다는 규칙입니다. 규칙을 만든 사람도 예외가 아니라서, 설계 노트도 그 규칙의 린터로 점검합니다.
 
 ```sh
 python3 skills/seosul-lint/seosul_lint.py design-notes/
 ```
 
 ```
-design-notes/04-브랜치전략-이중실적장부.md:81 [번역투] "도장" → 확정 / 표시
+design-notes/04-브랜치전략-이중실적장부.md:81 [번역투] "도장" → 확정(마일스톤 상태) / 표시(장부에 남기는 마크) ※맥락 따라
 design-notes/05-검증-통합-릴리스결정.md:116 [번역투] "분배" → 나눠주기
 ...
 ```
 
-While these notes were written, this linter caught translationese the author had missed, and those spots were fixed. The rule-maker gets caught by the rule. That is the shape of the whole thing: not "this one output is done," but "does it still fit the rules the whole is held to."
+설계 노트를 쓰는 동안 이 린터가 작성자가 놓친 번역투를 잡아냈고, 작성자가 그 자리를 고쳤습니다. 지금 실행하면 70건 남짓이 나오는데, 대부분은 서술 규칙 문서와 인계 문서가 금칙어를 예로 든 곳입니다. 위에 옮긴 두 줄도 사람이 확인하고 그대로 둔 것입니다. 04는 바꾼 말 옆에 원래 말을 일부러 함께 적은 곳이고, 05는 두 낱말("부분", "배포")을 붙여 쓴 말에서 가운데 두 글자가 사전 단어로 잡힌 것입니다. 린터는 찾기만 하고, 고칠지는 사람이 정합니다. 결과물 하나가 끝났는지가 아니라, 전체가 지키기로 한 규칙과 여전히 맞는지를 봅니다.
 
 ```mermaid
 flowchart LR
-  AUTH["규칙을 만든 사람<br/>(저자 = 나)"]
+  AUTH["하네스를<br/>만든 사람"]
   OUT["설계 노트 작성"]
-  CHECK["서술 린터<br/>(그 규칙 자체)"]
-  SLIP{"번역투·이모지·2인칭?"}
-  FIX["그 자리 수정"]
+  CHECK["서술 린터<br/>(서술 규칙을<br/>기계로 점검)"]
+  SLIP{"번역투·이모지·<br/>2인칭이 있나?"}
+  FIX["사람이 보고 고침<br/>(오탐이면 그대로)"]
   OK["통과"]
   AUTH --> OUT --> CHECK --> SLIP
-  SLIP -->|잡힘| FIX --> CHECK
+  SLIP -->|있음| FIX --> CHECK
   SLIP -->|없음| OK
-  OK -.->|"규칙 만든 사람조차 규칙에 걸린다<br/>= 전체가 규칙과 맞물리는지 본다"| AUTH
+  OK -.->|"만든 사람도<br/>규칙에 걸린다"| AUTH
 ```
 
-> This slice is the **writing-discipline** corner of the harness — adjacent to, not the same as, full system coherence. It is shown because it is a real, verifiable moment, not a staged one.
+> 이 장면은 하네스의 서술 규율 쪽입니다. 시스템 전체의 정합성과 같은 것은 아니고, 그 옆에 있는 규율입니다. 꾸민 장면이 아니라 실제로 확인할 수 있는 장면이라 보여 드립니다.
 
 ---
 
-## Then what?
+## 다음은
 
-The real thing lives in your project: install it (see the [README](./README.en.md)), and `dlc-gate` stops you at the decision points a demo can't stage — before implementing, before committing, when something is about to be marked "verified."
+- **내 프로젝트에서 쓰기:** 설치하면 `dlc-gate`(결정 지점마다 맞는 규칙을 안내하는 스킬)가 예제로는 보여 줄 수 없는 결정 지점(구현 전, 커밋 전, "검증 완료"라고 적기 전)마다 작업을 멈추고 확인을 받습니다. 설치는 [README](./README.md#설치).
+- **겪는 문제로 찾기:** [상황 지도](./docs/guide/00-상황지도.md)(AI를 쓰다 겪는 문제로 찾는 안내서). 9장에는 각자 통과한 두 브랜치가 충돌 없이 합쳐진 뒤 깨지는 예제(`bash examples/merge_break_demo.sh`)가, 10장에는 사람에게 물을 결정을 설문 하나로 만드는 예제(`examples/survey_demo.json`)가 있습니다.
+- **여러 세션으로 나눠 쓰기(0.2.0, 소규모 모드):** 사람(결정) → 게이트웨이 세션(전달·감시) → 실무자 세션(구현). 안내서는 [`docs/오케스트레이션-구성.md`](./docs/오케스트레이션-구성.md).
 
-Splitting work across several Claude Code sessions? Version 0.2.0 adds a **small mode** — human decides, a gateway session relays and watches, worker sessions implement. See [`docs/overview-en.md`](./docs/overview-en.md#small-mode-020--multiple-sessions-without-the-full-setup) and the Korean setup guide [`docs/오케스트레이션-구성.md`](./docs/오케스트레이션-구성.md).
-
-If the dog food was edible, a star helps the next SI developer find it.
-
----
-
-## 한국어
-
-- **1부 — 돌려보기:** `python3 examples/reversibility_demo.py` — 가역성 규칙(07)이 상황 5개를 "혼자 함(A) / 하고 알림(B) / 멈추고 승인(C) / 보류(D)"로 판정한다. **[3]이 핵심** — 가역·명확·내 일처럼 보여도 '할인율'은 사업 결정이라, 에이전트가 혼자 진행하지 않고 사람의 승인을 받는다. 나머지 기준이 모두 괜찮아도 걸린 하나를 덮어놓고 지나가지 않는다.
-- **2부 — 보기:** `python3 skills/seosul-lint/seosul_lint.py design-notes/` — 규칙을 만든 사람이 놓친 번역투를 그 규칙의 린터가 잡는다. 규칙 만든 사람조차 규칙에 걸린다.
-- 둘 다 **한 조각**이지 하네스 전체의 5분 요약이 아니다. 전체는 실제 프로젝트에서 게이트가 제때 멈춰 세울 때 드러난다. 설치는 [README](./README.md).
-- **여러 세션으로 나눠 쓰기(0.2.0):** 사람(결정) → 게이트웨이 세션(전달·감시) → 실무자 세션(구현). 안내서는 [`docs/오케스트레이션-구성.md`](./docs/오케스트레이션-구성.md).
+써 보고 쓸 만했다면, 별 하나가 다음 SI 개발자가 이 저장소를 찾는 데 도움이 됩니다.
