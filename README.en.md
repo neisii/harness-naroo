@@ -4,7 +4,7 @@
 
 **An agent reports "done." But whether its result still fits the whole process and system — who checks that?**
 
-A Claude Code harness that checks an agent's output against **whole-system coherence**, not just whether the one task "succeeded" — through human gates, re-verification in a fresh context, and a reversibility check. A 12-step rule system distilled from a real SI delivery.
+A Claude Code harness that checks an agent's output against **whole-system coherence**, not just whether the one task "succeeded" — through human gates, re-verification in a fresh context, and a reversibility check. A 12-step rule system distilled from a real SI delivery. AI-DLC (AI-Driven Development Lifecycle) is a development method where AI does the planning, design, code, and tests while people review and approve; this harness formalizes rules that were built up step by step out of real needs in SI work, on top of that flow.
 
 *For SI developers — and, naturally, people who work in Korean — who hold that an agent succeeding at its task isn't the finish line. Keeping the whole system coherent is, and it has to be checkable.*
 
@@ -45,7 +45,7 @@ The multi-session setup is new in 0.2.0 and has been dogfooded on a real reposit
 
 ## Install
 
-Requires [Claude Code](https://claude.com/claude-code).
+Requires [Claude Code](https://claude.com/claude-code) and Python 3 (used by the skill scripts and demos; on Windows use `python` or `py` instead of `python3`).
 
 ```sh
 # in Claude Code
@@ -54,6 +54,10 @@ Requires [Claude Code](https://claude.com/claude-code).
 ```
 
 Then restart or run `/reload-plugins`. The `dlc-gate` skill activates at AI-DLC decision points, and the rule documents load from the plugin root.
+
+- **Check the install:** run `claude plugin list` in a terminal; `ai-dlc-harness@harness-naroo` should show as `enabled`.
+- **Where it applies:** you choose a scope when installing ([docs](https://code.claude.com/docs/en/plugins/install#choose-an-install-scope)). In the `/plugin` panel pick user (you, every project), project (everyone in this repository), or local (you, this repository only); the terminal `claude plugin install` defaults to user scope (`--scope project` / `--scope local` to change). To use the harness in one project only, install with local or project scope. If you installed at user scope and want it off in a project, run `claude plugin disable ai-dlc-harness@harness-naroo --scope local` in that project folder (it turns off only there). `dlc-gate` triggers on phrases like "implement" or "commit", so setting the scope is worth it.
+- **First thing to try:** [QUICKSTART](./QUICKSTART.md), or the Korean [guide map](./docs/guide/00-상황지도.md).
 
 To try a local copy, first clone the repository:
 

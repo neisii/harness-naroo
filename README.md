@@ -4,7 +4,7 @@
 
 **에이전트는 "완료"라고 한다. 그 결과가 전체 흐름·시스템과 맞물리는지는 누가 확인하나?**
 
-개별 작업이 성공했는지가 아니라, 그 결과가 **전체 시스템의 정합성**을 깨지 않는지 확인하는 Claude Code 하네스입니다. 사람 게이트, 새 맥락 재검증, 가역성 판정으로 확인합니다. 실제 SI 납품에서 쓰던 12단계 규칙 체계를 추려냈습니다.
+개별 작업이 성공했는지가 아니라, 그 결과가 **전체 시스템의 정합성**을 깨지 않는지 확인하는 Claude Code 하네스입니다. 사람 게이트, 새 맥락 재검증, 가역성 판정으로 확인합니다. 실제 SI 납품에서 쓰던 12단계 규칙 체계를 추려냈습니다. AI-DLC(AI-Driven Development Lifecycle)는 AI가 계획·설계·코드·테스트를 맡고 사람이 검토·승인하는 개발 방법론이고, 이 하네스는 SI 실무에서 필요할 때마다 조금씩 쌓아 온 규칙을 그 흐름 위에 하네스로 정립한 것입니다.
 
 > 실제 공공 조달 차세대 구축(2026)에서 운영하던 하네스를 익명화해 공개했습니다. 그 프로젝트에서
 > **화면 34개를 일정보다 한 달가량 앞당겨 납품**하는 데 쓰였고, **규칙 13개·스킬 27개·도구 31개**까지
@@ -48,7 +48,7 @@
 
 ## 설치
 
-[Claude Code](https://claude.com/claude-code)가 필요합니다.
+필요한 것: [Claude Code](https://claude.com/claude-code), Python 3(스킬 스크립트와 데모가 씁니다. Windows에서는 `python3` 대신 `python`이나 `py`).
 
 ```sh
 # Claude Code 안에서
@@ -57,6 +57,10 @@
 ```
 
 설치 뒤 재시작하거나 `/reload-plugins`를 실행합니다. `dlc-gate` 스킬이 AI-DLC 결정 지점에서 켜지고, 규칙 문서는 플러그인 폴더에서 읽힙니다.
+
+- **설치 확인:** 터미널에서 `claude plugin list`를 실행해 `ai-dlc-harness@harness-naroo`가 `enabled`로 보이면 됩니다.
+- **적용 범위:** 설치할 때 범위를 고릅니다([공식 문서](https://code.claude.com/docs/en/plugins/install#choose-an-install-scope)). `/plugin` 화면에서는 나에게(모든 프로젝트, user) · 이 저장소의 협업자 모두에게(project) · 나에게, 이 저장소에서만(local) 가운데 고르고, 터미널의 `claude plugin install`은 기본이 user 범위입니다(`--scope project`·`--scope local`로 바꿉니다). 하네스를 한 프로젝트에서만 쓰려면 local이나 project로 설치합니다. user 범위로 설치했는데 어떤 프로젝트에서는 끄고 싶으면, 그 프로젝트 폴더에서 `claude plugin disable ai-dlc-harness@harness-naroo --scope local`로 끕니다(그 폴더에서만 꺼집니다). `dlc-gate`는 "구현해", "커밋해" 같은 말에 반응해 켜지므로, 범위를 정해 두는 편이 좋습니다.
+- **처음 해 볼 일:** [5분 입구](./QUICKSTART.md)나 [상황 지도](./docs/guide/00-상황지도.md)에서 내 문제를 골라 그 장의 "해 보기"를 따라 합니다.
 
 로컬 사본으로 시험하려면, 먼저 저장소를 내 컴퓨터에 복제합니다.
 
