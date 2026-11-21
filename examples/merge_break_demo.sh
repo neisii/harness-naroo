@@ -1,3 +1,5 @@
+# Copyright 2026 Baek Ga-hui (neisii) - https://github.com/neisii/harness-naroo
+# SPDX-License-Identifier: Apache-2.0
 # 가이드 9장 실습: 각자 통과한 두 브랜치가, 충돌 없이 합쳐진 뒤 깨진다.
 # 실행: bash examples/merge_break_demo.sh
 # 필요한 것: git, python3. 임시 폴더에서만 작업하고 끝나면 그 경로를 알려 준다.

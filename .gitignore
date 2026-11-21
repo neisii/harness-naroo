@@ -25,6 +25,9 @@ node_modules/
 # Claude Code local/session artifacts (not part of the plugin)
 .claude/settings.local.json
 
+# Worktrees made by the worktree skill
+.claude/worktrees/
+
 # Editor swap files
 *.swp
 *.swo

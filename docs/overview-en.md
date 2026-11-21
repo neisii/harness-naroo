@@ -14,8 +14,10 @@ On a real system-integration (SI) delivery, a naive "let the AI code" approach f
 - it **stalls silently**, waiting for an input nobody is watching for,
 - and one "decision" session becomes a **bottleneck** for everything.
 
-AI-DLC ("AI Development Life Cycle") is the harness that addressed each of these on a 4-month next-gen
-public-procurement build. The guiding principle: **treat the AI like a disciplined teammate** — clear
+AI-DLC (AI-Driven Development Lifecycle) is a development method where AI does the planning, design, code,
+and tests while people review and approve. This repository is a Claude Code harness for that method: it
+formalizes, on top of that flow, the rules that were built up step by step to address each of these on a
+4-month next-gen public-procurement build. The guiding principle: **treat the AI like a disciplined teammate** — clear
 boundaries, an explicit approval gate, one canonical source of truth, and *verified means actually verified.*
 
 ## The pipeline
@@ -39,7 +41,7 @@ governs, not memorized up front. Rule IDs are `<prefix>-<nn>`:
 | 2 | `RL` | Human vs. AI responsibilities; `qa-master` delegation scope (`RL-12`) |
 | 3 | `RQ` | Research scope, A/B/C/D triage, option-style questions, blueprint format |
 | 4 | `GT` | The implementation-start **gate** (`GT-02`) |
-| 5 | `CM` | Result review, completion report, commit message (no AI-attribution lines) |
+| 5 | `CM` | Result review, completion report, commit message (AI-attribution lines are the team's call; a team that forbids them turns them off with Claude Code's `attribution` setting, `CM-11`) |
 | 6 | `AG` | Agent-to-agent comms (handshake), no cross-project reads, 3-line task mandate |
 | 7 | `BR` | Branch naming, scope, merge flow |
 | 8 | `AR` | Artifact paths, blueprint storage, required completion reports, diagram→HTML |
@@ -48,9 +50,13 @@ governs, not memorized up front. Rule IDs are `<prefix>-<nn>`:
 | 11 | `CS` | Commit-plan approval, staging diff, dangerous git commands |
 | 12 | `WT` | Worktree creation/teardown, server build & ports |
 
-A key discipline: the summary (`00-핵심규칙요약.md`) is only an index — the step document always wins, and any
-drift is surfaced to a human. The [`dlc-gate`](../skills/dlc-gate) skill points you to the right document at
-the moment you act.
+A key discipline: the summary ([`rules/향상된_AI-DLC_00-핵심규칙요약.md`](../rules/향상된_AI-DLC_00-핵심규칙요약.md))
+is only an index — the step document always wins, and any drift is surfaced to a human. The
+[`dlc-gate`](../skills/dlc-gate) skill points you to the right document at the moment you act.
+
+**Adapt, don't rewrite.** The rules keep the original team's concrete values (paths, stack, OS, session names,
+commit attribution, conversation language) as examples; [`환경값-정의.md`](./환경값-정의.md) (Korean) lists
+what to swap.
 
 ## Human Gate
 
@@ -69,6 +75,12 @@ Rather than one overloaded session, responsibilities are split:
 
 This is what removed the "everything funnels through one session" bottleneck.
 
+These are the original team's names. What the harness separates is the kind of session: a **lead** session
+(총괄) takes no implementation work and connects the human with other sessions or handles project-wide work; a
+**worker** session (워커) does the assigned work, usually implementation. Names are an environment value
+([`환경값-정의.md`](./환경값-정의.md) B); the small-mode gateway below is a lead session, its workers are worker
+sessions.
+
 ### Small mode (0.2.0) — multiple sessions without the full setup
 
 The full setup above assumes infrastructure a solo developer or small team won't have: a dedicated
@@ -82,12 +94,40 @@ human (decides)  →  gateway session (relays & watches)  →  worker sessions (
   human's approvals **verbatim**, watches progress, and escalates anything not on its written delegation list.
   The human stands in for `qa-master`, the ledger, and patrol.
 - **Gateway ≠ worker**, so no session approves its own work.
+- **Workers are separate sessions** (`claude --bg`), not subagents (the `Agent` tool), because they wait for the
+  human's approval across several gates.
+- **Permission mode defaults to `auto`** for the gateway and the workers. What must be blocked is blocked
+  elsewhere: direct and force pushes to main by GitHub branch protection, and decisions (blueprint, business
+  decisions, merge, delegation scope) by the gates in the delegation record rather than by permission prompts.
+  `acceptEdits` with an allowlist is the conservative option.
+- **Check before sending.** Idle background workers get cleaned up, which is normal. Before relaying, the
+  gateway runs `session-stall-check`; if the worker is waiting on a human it tells the human instead, and if
+  there is no process it revives the worker with `session-wake` first.
+- **Push is not left to workers.** Push and PRs are the human's (the gateway does them on the human's
+  instruction); direct and force pushes to main are blocked by GitHub branch protection, not by command options.
 - **Optional narrow delegation:** the gateway may approve commit plans (CS-01) and requirement-vs-result checks
-  (CM-01) — reversible, rule-checkable gates — but only after its own check **and** a fresh-context
-  re-verification both pass. Blueprint approval, push/PR/merge, irreversible git, and business decisions stay
-  with the human. A one-time instruction ("merge this PR") never becomes a standing permission.
+  (CM-01) — reversible, rule-checkable gates, chosen by applying the reversibility criteria to each gate — but
+  only after its own check **and** a fresh-context re-verification both pass. Everything else (blueprint
+  approval, push/PR/merge, irreversible git, business decisions) stays with the human. A one-time instruction
+  ("merge this PR") never becomes a standing permission. Optionally, one step wider: if both checks pass and
+  only the wording of a commit message or completion report is off, the gateway has the worker fix it,
+  re-verifies, approves, and reports to the human afterwards.
+- **Short approvals are relayed only when their target is clear.** If the human answers briefly ("approve as
+  recommended"), the gateway relays it only when it is clear which task and what is being approved; otherwise it
+  asks back instead of guessing. If it expands a short answer ("question 3 is A"), it shows the expansion to the
+  human first.
 - **Dogfooded** on a real repository: a gate round-trip, two narrow-delegation runs, and a three-worker run
-  through blueprint, PR, merge, and cleanup — no lane violations and no wrong approvals. Samples are still small.
+  through blueprint, PR, merge, and cleanup — no lane violations and no wrong approvals. Before the 0.2.0
+  release (2026-11-21), a run on a new public repository ([gate3-trial](https://github.com/neisii/gate3-trial)):
+  one gateway and four workers (one skeleton task, then three in parallel, then two follow-ups), with tasks deliberately
+  set up to affect one another. Again no lane violations or wrong approvals; that effect reached the human at
+  the blueprint stage, and its quieter breakage (orders with a partial cancellation dropping out of the revenue
+  total) was caught by a fresh-context re-verifier. Workers stalling on permission prompts in that run led to
+  the `auto` default above. Samples are still small.
+- **Not yet included:** an engine that splits work automatically (in small mode the human splits it), the
+  waiting ledger and patrol, and workers launching their own worker sessions. Planned, one opt-in bundle per
+  minor version: 0.3.0 integration and release flow → 0.4.0 waiting ledger and asynchronous review → 0.5.0
+  patrol and alerts → … → 1.0.0 the full setup.
 - Guide (Korean): [`오케스트레이션-구성.md`](./오케스트레이션-구성.md) · delegation record template:
   [`위임기록-템플릿.md`](./위임기록-템플릿.md).
 
@@ -105,7 +145,8 @@ code**, because they were tightly coupled to the project's database, document sy
 2. **Session-stall prevention (INCIDENT).** A session once sat **7h 37m** waiting on an input prompt while its
    status looked normal and no alert fired. Response in three layers: **prevent** (mandatory 3-line task
    instructions), **block** (disable the interactive question window), **detect** (watch for inactivity). The
-   portable [`session-stall-check`](../skills/session-stall-check) skill is the detect layer, generalized.
+   portable [`session-stall-check`](../skills/session-stall-check) skill generalizes the detect layer: it
+   classifies a session from `claude agents` state·status·pid (waiting on a human / working / idle / no process).
 
 3. **Decision-session bottleneck (BOTTLENECK).** The decision session was also doing patrols, tallies, and
    tool-building. Mechanical work was automated (a patrol ran ~254 times over ~40h, surfacing only urgent
