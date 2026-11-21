@@ -13,12 +13,17 @@ What it does:
   1b. git fetch origin <base> (30 s timeout, no interactive prompt). A fetch
       failure (expired login, no network, no remote) STOPS the script. If the
       local <base> is behind origin/<base> it STOPS too, creating nothing (WT-03).
+      --local-base: the base exists only in this clone (e.g. a stacked branch not
+      pushed yet). Still fetches; proceeds only if origin answers "no such
+      branch", then skips the behind-check. If the branch is on origin, it
+      refuses (run without the flag so the behind-check applies).
   1c. repo-local `git config core.longpaths true` (WT-06; harmless off-Windows).
   2.  git branch --no-track <branch> <base>            (local only, no upstream)
   3.  git worktree add --no-checkout <project>/.claude/worktrees/<name> <branch>
   4.  sparse-checkout (non-cone): /*  and  !/docs/     (docs/ is NOT materialized)
   5.  git checkout <branch>
   6.  worktree .claude/settings.local.json  ->  env PRJ_METRICS_DIR (ledger outside repo)
+      --no-metrics: skip this step (team declared "no metrics ledger", env value A).
   7.  print verification (branch -vv, sparse list, paths)
 
 It does NOT commit, push, delete anything, create docs, or touch existing
@@ -41,9 +46,12 @@ def fail(msg: str) -> "None":
     sys.exit(1)
 
 
-def git(dir_: Path, *args: str, check: bool = True, timeout=None):
-    """Run `git -C <dir> <args>`; on non-zero exit (when check) call fail()."""
+def git(dir_: Path, *args: str, check: bool = True, timeout=None, c_locale: bool = False):
+    """Run `git -C <dir> <args>`; on non-zero exit (when check) call fail().
+    c_locale=True forces English git messages (used where we match an error text)."""
     env = dict(os.environ, GIT_TERMINAL_PROMPT="0", GCM_INTERACTIVE="never")
+    if c_locale:
+        env.update(LC_ALL="C", LANG="C")
     try:
         p = subprocess.run(
             ["git", "-C", str(dir_), *args],
@@ -73,6 +81,10 @@ def main() -> None:
                     help="root for the out-of-repo metrics ledger (default: ~/.prj-ai-metrics)")
     ap.add_argument("--no-exclude-docs", action="store_true",
                     help="do not add the '!/docs/' sparse exclusion")
+    ap.add_argument("--local-base", action="store_true",
+                    help="--base exists only in this clone (not pushed); checks origin, then skips the behind-check (refuses if the branch is on origin)")
+    ap.add_argument("--no-metrics", action="store_true",
+                    help="do not write PRJ_METRICS_DIR (team has no metrics ledger, env value A)")
     a = ap.parse_args()
 
     # ---- 1. pre-checks ----------------------------------------------------
@@ -81,6 +93,8 @@ def main() -> None:
         fail(f"not a git project root: {proj}")
 
     explicit_base = bool(a.base)
+    if a.local_base and not explicit_base:
+        fail("--local-base needs an explicit --base.")
     base = a.base or f"{a.branch.split('/')[0]}/main"
     if not branch_exists(proj, base):
         if explicit_base:
@@ -111,24 +125,46 @@ def main() -> None:
              f"cannot be committed by accident. Report to the human.")
 
     # ---- 1b. remote check (WT-03) -----------------------------------------
+    # Always ask the remote. --local-base only accepts the specific answer
+    # "this branch is not on origin"; any other fetch failure still stops.
     try:
-        f = git(proj, "fetch", "origin", base, check=False, timeout=30)
+        f = git(proj, "fetch", "origin", base, check=False, timeout=30, c_locale=True)
     except subprocess.TimeoutExpired:
         fail(f"git fetch did not finish within 30 s. Nothing was created. The login may have expired: "
              f"ask the human to run '! git -C {proj} fetch' once, then run this script again.")
-    if f.returncode != 0:
-        fail(f"git fetch failed. Nothing was created. If the login expired, ask the human to run "
-             f"'! git -C {proj} fetch' once, then run this script again.\n{(f.stderr or f.stdout).strip()}")
+    err = (f.stderr or f.stdout).strip()
+    not_on_remote = f.returncode != 0 and "couldn't find remote ref" in err
 
-    if git(proj, "rev-parse", "--verify", "--quiet", f"refs/remotes/origin/{base}",
-           check=False).returncode == 0:
-        behind = int(git(proj, "rev-list", "--count", f"{base}..origin/{base}").stdout.strip() or "0")
-        if behind > 0:
-            fail(f"local {base} is {behind} commit(s) behind origin/{base}. Nothing was created. "
-                 f"Do not update the local base branch on your own: ask the human (or qa-master) first (WT-03).")
-        print(f"[ok] {base} is not behind origin/{base}")
+    if a.local_base:
+        if f.returncode == 0:
+            fail(f"--local-base was given, but {base} exists on origin. Nothing was created. "
+                 f"Run again without --local-base so the behind-check applies (WT-03).")
+        if not not_on_remote:
+            fail(f"git fetch failed. Nothing was created. If the login expired, ask the human to run "
+                 f"'! git -C {proj} fetch' once, then run this script again.\n{err}")
+        print(f"[note] --local-base: {base} is not on origin (checked); behind-check skipped.")
+        if git(proj, "rev-parse", "--verify", "--quiet", f"refs/remotes/origin/{base}",
+               check=False).returncode == 0:
+            print(f"[note] a stale origin/{base} ref remains in this clone (the remote branch is gone). "
+                  f"Ignored. Cleaning it ('git remote prune origin') is the human's call.")
     else:
-        print(f"[note] origin/{base} does not exist; behind-check skipped.")
+        if f.returncode != 0:
+            hint = ""
+            if not_on_remote:
+                hint = (f"\n[hint] {base} is not on origin. If it is a local-only branch on purpose "
+                        f"(e.g. a stacked branch not pushed yet), run again with --local-base, "
+                        f"or ask the human to push it first. Do not use a manual 'git worktree add' (WT-03).")
+            fail(f"git fetch failed. Nothing was created. If the login expired, ask the human to run "
+                 f"'! git -C {proj} fetch' once, then run this script again.\n{err}{hint}")
+        if git(proj, "rev-parse", "--verify", "--quiet", f"refs/remotes/origin/{base}",
+               check=False).returncode == 0:
+            behind = int(git(proj, "rev-list", "--count", f"{base}..origin/{base}").stdout.strip() or "0")
+            if behind > 0:
+                fail(f"local {base} is {behind} commit(s) behind origin/{base}. Nothing was created. "
+                     f"Do not update the local base branch on your own: ask the human (or qa-master) first (WT-03).")
+            print(f"[ok] {base} is not behind origin/{base}")
+        else:
+            print(f"[note] origin/{base} does not exist; behind-check skipped.")
 
     # ---- 1c. long paths (WT-06) -------------------------------------------
     git(proj, "config", "core.longpaths", "true")
@@ -155,20 +191,23 @@ def main() -> None:
     print("[ok] checked out with sparse patterns")
 
     # ---- 6. settings.local.json (merge, keep existing keys) ---------------
-    metrics_dir = Path(a.metrics_root) / a.project
-    metrics_dir.mkdir(parents=True, exist_ok=True)
-    settings_path = wt / ".claude" / "settings.local.json"
-    settings_path.parent.mkdir(parents=True, exist_ok=True)
-    data = {}
-    if settings_path.exists():
-        try:
-            data = json.loads(settings_path.read_text(encoding="utf-8")) or {}
-        except json.JSONDecodeError:
-            fail(f"existing {settings_path} is not valid JSON; not overwriting. Report to the human.")
-    data.setdefault("env", {})
-    data["env"]["PRJ_METRICS_DIR"] = str(metrics_dir)
-    settings_path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    print(f"[ok] PRJ_METRICS_DIR={metrics_dir} written to {settings_path}")
+    if a.no_metrics:
+        print("[note] --no-metrics: PRJ_METRICS_DIR not written (no metrics ledger, env value A).")
+    else:
+        metrics_dir = Path(a.metrics_root) / a.project
+        metrics_dir.mkdir(parents=True, exist_ok=True)
+        settings_path = wt / ".claude" / "settings.local.json"
+        settings_path.parent.mkdir(parents=True, exist_ok=True)
+        data = {}
+        if settings_path.exists():
+            try:
+                data = json.loads(settings_path.read_text(encoding="utf-8")) or {}
+            except json.JSONDecodeError:
+                fail(f"existing {settings_path} is not valid JSON; not overwriting. Report to the human.")
+        data.setdefault("env", {})
+        data["env"]["PRJ_METRICS_DIR"] = str(metrics_dir)
+        settings_path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        print(f"[ok] PRJ_METRICS_DIR={metrics_dir} written to {settings_path}")
 
     # ---- 7. verification output -------------------------------------------
     print("\n--- git branch -vv (this branch must have NO [origin/...] tracking) ---")
@@ -179,8 +218,9 @@ def main() -> None:
     print(git(wt, "sparse-checkout", "list").stdout.rstrip())
     print("--- docs/ present in worktree? (must be False) ---")
     print((wt / "docs").exists())
-    print("--- settings.local.json ---")
-    print(settings_path.read_text(encoding="utf-8").rstrip())
+    if not a.no_metrics:
+        print("--- settings.local.json ---")
+        print(settings_path.read_text(encoding="utf-8").rstrip())
 
     up = git(wt, "rev-parse", "--abbrev-ref", f"{a.branch}@{{upstream}}", check=False)
     if up.returncode == 0 and up.stdout.strip():

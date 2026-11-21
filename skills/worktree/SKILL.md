@@ -17,7 +17,8 @@ python3 "${CLAUDE_PLUGIN_ROOT}/skills/worktree/new_worktree.py" \
   --project <프로젝트폴더명> \
   --branch  <새 브랜치명> \
   --name    <워크트리명> \
-  [--base <기준브랜치>] [--root <프로젝트 상위 경로>] [--metrics-root <메트릭 루트>] [--no-exclude-docs]
+  [--base <기준브랜치>] [--local-base] [--root <프로젝트 상위 경로>] [--metrics-root <메트릭 루트>]
+  [--no-metrics] [--no-exclude-docs]
 ```
 
 예:
@@ -29,12 +30,15 @@ python3 "${CLAUDE_PLUGIN_ROOT}/skills/worktree/new_worktree.py" \
 - `--root` 생략 시 환경변수 `PRJ_ROOT`, 없으면 현재 디렉터리를 프로젝트 상위로 본다. 프로젝트 경로 = `<root>/<project>`.
 - `--base` 생략 시 `--branch`의 첫 구간 + `/main`(예: `team-a/...` → `team-a/main`). 그 브랜치가 로컬에 없으면
   `main`으로 대체하고 알린다. `--base`를 명시하면 로컬에 없을 때 대체 없이 실패한다.
+- `--local-base`: 기준 브랜치가 이 PC에만 있을 때 쓴다(예: 아직 push하지 않은 브랜치 위에 후속 작업을 쌓을 때). 원격에 그 브랜치가 정말 없는지 fetch로 확인한 뒤, 없을 때만 뒤처짐 검사를 건너뛰고 만든다. `--base`를 함께 줘야 한다. 원격에 같은 브랜치가 있으면 실패한다(그때는 옵션 없이 다시 실행해 뒤처짐 검사를 받는다). 로그인 만료 같은 다른 fetch 실패는 평소처럼 멈춘다. 원격에서 지워진 브랜치의 흔적(`origin/<base>`)이 이 PC에 남아 있으면 무시하고 알린다(정리는 사람 몫).
+- `--no-metrics`: `docs/환경값-정의.md` A에 "메트릭 원장 없음"으로 선언한 팀이 쓴다. `PRJ_METRICS_DIR`를 기록하지 않는다.
 
 ## 하는 일 / 안 하는 일
 
 한 번에: 사전점검 → `git fetch origin <base>`(30초 제한, 비대화식) → 뒤처짐 검사 → `core.longpaths=true` →
 업스트림 없는 로컬 브랜치(`branch --no-track`) → `worktree add --no-checkout` → sparse-checkout(`/*`, `!/docs/`) →
 checkout → 워크트리 `.claude/settings.local.json`에 `env.PRJ_METRICS_DIR` 병합 기록 → 검증 출력.
+`--local-base`면 원격에 없음을 확인한 뒤 뒤처짐 검사를 건너뛰고, `--no-metrics`면 `PRJ_METRICS_DIR` 기록을 건너뛴다.
 
 **커밋·push·삭제·docs 생성·기존 워크트리 수정은 하지 않는다.** 실패하면 그 자리에서 멈추고 무엇이 남았는지
 출력하며, 스스로 정리하지 않는다.
@@ -45,6 +49,8 @@ checkout → 워크트리 `.claude/settings.local.json`에 `env.PRJ_METRICS_DIR`
 |---|---|
 | 로컬 기준 브랜치가 origin보다 뒤처짐 | 로컬 기준 브랜치를 임의로 갱신하지 말고 사람(또는 qa-master)에게 확인 (WT-03) |
 | fetch 실패·30초 초과(로그인 만료 등) | 사람이 `! git -C <프로젝트> fetch`로 한 번 로그인한 뒤 다시 실행 |
+| 기준 브랜치가 원격에 없음(`couldn't find remote ref`) | 일부러 로컬에만 둔 브랜치면 `--local-base`로 다시 실행, 아니면 사람에게 push를 요청. 손으로 `git worktree add` 하지 않는다 |
+| `--local-base`인데 원격에 같은 브랜치가 있음 | `--local-base` 없이 다시 실행(뒤처짐 검사를 받는다) |
 | `.claude/settings.local.json`이 git-ignore 안 됨 | 환경파일이 커밋되지 않도록 중단 — 사람에게 보고 |
 | 기준 브랜치 없음(`--base` 명시) / 브랜치·워크트리 이름 충돌 | 인자 확인 |
 
