@@ -11,7 +11,7 @@ AI가 결정 지점에서 기준 4개를 self-assess하면 A/B/C/D로 길을 정
       --reversibility 가역 --rollback 있음 --clarity 명확 --business 사업결정 --scope 외부공유
 
   # 판정 근거 JSON (장부에 넣거나 파일로 남김)
-  python3 reversibility_gate.py --task "..." --reversibility ... --json \
+  python3 reversibility_gate.py --task "..." --reversibility ... --rollback ... --json \
       --session 세션명 --why-business "할인율은 기획이 정할 사업 규칙"
 
 정본 규칙: design-notes/07-가역성분류표.md. 표준 라이브러리만 쓴다.
@@ -99,6 +99,8 @@ def selftest():
         (("가역", "있음", "명확", "사업결정", "외부공유"), "C"),
         (("가역", "있음", "모호", "해당없음", "외부공유"), "D"),
         (("가역", "없음", "명확", "해당없음", "외부공유"), "C"),
+        # 내 구역은 워크트리·git이 되돌리는 수단이라 롤백 등록을 따로 묻지 않는다(의도한 동작, 2026-11-21)
+        (("가역", "없음", "명확", "해당없음", "내구역"), "A"),
     ]
     for args, expect in cases:
         got = route(*args)[0]
@@ -112,7 +114,7 @@ def main(argv):
     ap = argparse.ArgumentParser(description="가역성 판정 라우터(07) + 판정 근거 기록")
     ap.add_argument("--task", help="무슨 일인지 한 줄")
     ap.add_argument("--reversibility", choices=REVERSIBILITY)
-    ap.add_argument("--rollback", choices=ROLLBACK, default="있음")
+    ap.add_argument("--rollback", choices=ROLLBACK)
     ap.add_argument("--clarity", choices=CLARITY)
     ap.add_argument("--business", choices=BUSINESS)
     ap.add_argument("--scope", choices=SCOPE)
@@ -135,7 +137,7 @@ def main(argv):
         selftest()
         return 0
 
-    missing = [n for n in ("task", "reversibility", "clarity", "business", "scope")
+    missing = [n for n in ("task", "reversibility", "rollback", "clarity", "business", "scope")
                if getattr(a, n) is None]
     if missing:
         print("[오류] 필수 인자 누락: %s (--selftest로 자기 점검 가능)"
