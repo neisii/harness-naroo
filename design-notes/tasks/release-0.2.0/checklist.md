@@ -50,7 +50,7 @@
 2. `0.2.0` 브랜치를 main에 PR·병합 — 완료(2026-11-22, [PR #1](https://github.com/neisii/harness-naroo/pull/1), merge commit `13dff21` — 병합 방식은 사용자 결정, 병합도 사용자 지시)
 3. 태그 `v0.2.0` — 완료(2026-11-22, annotated, `13dff21`에 달고 push. pre-push 훅 전체 이력 검사 통과)
 4. 공식 디렉터리에 다시 제출. 2026-11-15 거부 사유였던 shebang을 뺀 판이다(이전 문의·검토 요청은 2026-11-20 사용자가 취소)
-5. 마켓을 로컬 폴더에서 GitHub로 되돌리고 재설치·리로드
+5. 마켓을 로컬 폴더에서 GitHub로 되돌리고 재설치·리로드 — 완료(2026-11-22, `neisii/harness-naroo`에서 0.2.0을 user 범위로 설치, 리로드는 쓰는 세션에서 사용자가)
 6. [gate3-trial README](https://github.com/neisii/gate3-trial#이-저장소를-읽는-법)의 "관문 3 실전 기록" 링크(main 기준)가 열리는지 확인. 0.2.0을 main에 병합하기 전까지는 404가 정상이다 — 완료(2026-11-22, 병합 뒤 main에 파일 있음 확인)
 
 **공개 뒤 논의할 것** (backlog): T11 server-ops의 다른 빌더 지원 · T12 사람용 html 변환·렌더 확인 스킬 · T13 공식 활용 안내 글(Opus 5.5)과 하네스 0.2.0 비교

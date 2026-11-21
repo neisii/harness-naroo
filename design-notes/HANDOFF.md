@@ -4,7 +4,7 @@
 
 ## 1. 한눈에
 
-- **0.2.0 출시(2026-11-22):** PR #1을 merge commit으로 main에 병합(`13dff21`), 태그 `v0.2.0` push. 남은 출시 절차는 4(공식 디렉터리 재제출)·5(마켓을 GitHub로 되돌리고 재설치). 이후 작업은 main에서.
+- **0.2.0 출시(2026-11-22):** PR #1을 merge commit으로 main에 병합(`13dff21`), 태그 `v0.2.0` push. 출시 절차 5(마켓을 GitHub로 되돌리고 재설치)도 끝. 남은 것은 4(공식 디렉터리 재제출, 사용자가 진행 중). 이후 작업은 main에서.
 - **레포:** github.com/neisii/harness-naroo (공개, `main`). 작업 브랜치 `0.2.0`(2026-11-21 밤 관문 3 고칠 거리 처리까지 푸시, 원격과 같음). push는 사용자 요청 때만. 관문 3 실전 예제 저장소: github.com/neisii/gate3-trial(공개).
 - **두 층:** (a) 공개 플러그인 — 스킬 15개(`skills/`) + `rules/`(S 차세대 하네스 정본). (b) `design-notes/` — 하네스 **다음 버전** 설계 방법론.
 - 이 핸드오프는 **(b) design-notes** 작업을 잇기 위한 것.
@@ -155,7 +155,7 @@
 
 판단이 안 서면(사용자가 직접 설치·업데이트했을 수 있음) 사용자에게 묻고 적는다. 다음 세션은 SessionStart 훅 안내 2번에 따라 이 줄을 읽는다.
 
-리로드: 불필요 (2026-11-22 의심 처리에서 고친 `rules/` 5·7·12단계(CM-10·BR-03·WT-06)를 사용자가 `/reload-plugins`로 반영 완료, 그 뒤 플러그인·스킬 변경 없음). 지금 마켓은 로컬 폴더라 `/reload-plugins`가 저장소 폴더를 직접 다시 읽는다. 버전 올리기·`claude plugin update`는 로컬 폴더 마켓에선 필요 없다(`plugin.json`은 0.2.0-rc.2). 마켓을 GitHub로 되돌린 뒤에는 아래 "설치본은 스냅샷" 절차를 따른다.
+리로드: 필요 — /reload-plugins (2026-11-22 마켓을 로컬 폴더에서 GitHub `neisii/harness-naroo`로 되돌리고 0.2.0을 다시 설치함). **이제 GitHub 마켓이라 아래 "설치본은 스냅샷" 절차가 다시 적용된다:** 저장소를 고쳐도 `plugin.json` 버전을 올리고 push → `claude plugin update` → `/reload-plugins`를 해야 설치본에 반영된다.
 
 **현재 상태(2026-11-21 밤, 문서 점검 세션 뒤):** `0.2.0` 브랜치. 이 세션의 변경은 주제별 커밋 4개로 나눔(push 안 함, push는 사용자 요청 때만). 출시 절차에 들어가기 전에 **공개 문서 전수 점검**을 했다 — 출시를 막는 구조 문제는 없었지만 사실 오류·갱신되지 않은 곳이 많아 고쳤다. 정본 기록 [`tasks/release-0.2.0/문서점검-2026-11-21.md`](./tasks/release-0.2.0/문서점검-2026-11-21.md)(1절 결정 6건·4절 의심 6건·6절 처리 기록). `release_check.py` 실패 0.
 
@@ -212,7 +212,7 @@
 
 
 
-**설치 상태 — 지금은 로컬 마켓(2026-11-20, 되돌릴 것):** 0.2.0 브랜치를 실전 검증하려고 마켓 `harness-naroo`를 GitHub 원본에서 **이 PC의 저장소 폴더**(`/Users/neisii/Development/harness-naroo`, `source: directory`)로 바꿔 등록하고 `ai-dlc-harness` **0.2.0-rc.1**을 전역 설치했다(`plugin.json` 커밋 `77eada6`). 이 플러그인을 쓰는 모든 프로젝트가 이 판을 받는다.
+**설치 상태 — 2026-11-22 GitHub 마켓으로 되돌림(0.2.0 설치). 아래는 2026-11-20~22 로컬 마켓 때의 기록:** 0.2.0 브랜치를 실전 검증하려고 마켓 `harness-naroo`를 GitHub 원본에서 **이 PC의 저장소 폴더**(`/Users/neisii/Development/harness-naroo`, `source: directory`)로 바꿔 등록하고 `ai-dlc-harness` **0.2.0-rc.1**을 전역 설치했다(`plugin.json` 커밋 `77eada6`). 이 플러그인을 쓰는 모든 프로젝트가 이 판을 받는다.
 - 반영 규칙은 같다: 저장소를 고치면 `plugin.json` 버전을 올리고 `claude plugin update` → 쓰는 세션에서 `/reload-plugins`. 같은 번호면 건너뛴다.
 - 폴더 원본은 작업 폴더를 통째로 사본 뜬다 — 비추적 파일(`.claude/settings.local.json`, `.DS_Store`)까지 캐시에 들어간다(`.git`은 안 들어감). 이 PC 안이라 해는 없다.
 - 되돌리기(0.2.0 정식 릴리스 뒤): `claude plugin marketplace remove harness-naroo` → `claude plugin marketplace add neisii/harness-naroo` → `claude plugin install ai-dlc-harness@harness-naroo --scope user`. 마켓을 지우면 플러그인도 함께 제거된다(지울 때 "saved options, secrets and data"도 지운다고 안내함).
@@ -254,4 +254,4 @@
 
 **알아 둘 함정 (이번 세션):** 이 셸은 zsh라 `for f in $변수`·`P="cmd"; $P`가 단어로 나뉘지 않는다(점검이 조용히 0건으로 끝남). 함수나 Python으로 돌린다. `git diff --name-only`는 한글 경로를 8진수로 바꾸니 `-c core.quotepath=false -z`를 쓴다.
 
-**새 세션 첫 수:** 이 핸드오프 → `git status -sb`(원격과 같은지, 이 세션 커밋 4개는 push 전) → (문서 점검·T13·출시 절차 1·2·3·6 끝남, 로컬은 main) → 출시 절차 4·5 → 출시 점검표 "출시 절차"(1~6) → 사용자와 출시 진행 여부를 정한다.
+**새 세션 첫 수:** 이 핸드오프 → `git status -sb`(원격과 같은지, 이 세션 커밋 4개는 push 전) → (문서 점검·T13·출시 절차 1·2·3·6 끝남, 로컬은 main) → 출시 절차 4(디렉터리 재제출) 결과 확인 → 출시 점검표 "출시 절차"(1~6) → 사용자와 출시 진행 여부를 정한다.
