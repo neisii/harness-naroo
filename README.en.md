@@ -169,7 +169,7 @@ Each step is one document, and every rule has an ID (for example `CS-01`). Claud
 
 | Path | What |
 |---|---|
-| `skills/session-stall-check/` | Is a session waiting on a human, busy, awaiting instructions, or gone? (from `claude agents` state·status·pid) — and whether to re-request, alert a human, or wake it |
+| `skills/session-stall-check/` | Is a session stuck on a dialog (such as a permission prompt), waiting for a reply, busy, awaiting instructions, or gone? (from `claude agents` state·status·pid·waitingFor) — and whether to re-request, alert a human, or wake it |
 | `skills/session-wake/` | Wake a named background session without creating a duplicate; launch options are restored |
 | `skills/qa-inbox/` · `skills/pending-status-check/` | Read-only views of the inter-session waiting ledger (AG-15). For the full setup; not used in small mode (ledger generalization planned for 0.4.0) |
 | `skills/patrol-notify/` · `skills/os-notify/` | Back-off notifications for "waiting on a human" items; native OS notification primitive. Patrol is for the full setup; not used in small mode (planned for 0.5.0) |

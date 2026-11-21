@@ -8,12 +8,13 @@ design-notes/tasks/release-0.2.0/checklist.md의 관문 2가 정본이다. 읽�
 
 점검 항목:
   1. 규칙이 부르는 도구가 공개판에 있는가  — rules/의 `*.ps1`과 "`이름` 스킬" 언급을 skills/와 대조
-  2. 문서 안의 상대 링크가 깨지지 않았는가 — 저장소의 모든 .md
+  2. 문서 안의 상대 링크가 깨지지 않았는가 — 저장소의 모든 .md, `#앵커`는 대상 문서의 제목과 GitHub 규칙으로 대조
   3. 서술 린터                            — README·docs·rules·skills (알려진 오탐 제외)
   4. shebang                              — skills/·examples/의 스크립트 첫 줄
   5. 기밀 토큰                            — .git/secret-blocklist가 있으면 추적·신규 파일 전부(토큰 값은 출력하지 않음)
   6. 작업 기록                            — design-notes/tasks/*/에 blueprint.md·completion-report.md, 보고서에 새 맥락 재검증
   7. 플러그인 검증                        — `claude plugin validate .` (명령이 없으면 건너뜀)
+  8. 이미지                              — 공식 디렉터리가 받는 형식(PNG·JPEG·GIF·WebP·ICO) 밖의 이미지, 어디서도 쓰이지 않는 이미지
 
 각 항목은 통과/실패/건너뜀과 근거를 출력하고, 실패가 하나라도 있으면 종료 코드 1로 끝난다.
 """
@@ -88,6 +89,40 @@ def check_tools():
     return False, out
 
 
+def gh_slug(text):
+    """GitHub가 제목을 앵커로 바꾸는 규칙: 링크는 글자만 남기고, 소문자로, 글자·숫자·공백·하이픈·밑줄 밖은
+    지우고, 공백을 하이픈으로."""
+    text = re.sub(r'\[([^\]]*)\]\([^)]*\)', r'\1', text.strip())
+    text = re.sub(r'<[^>]+>', '', text)                      # HTML 태그는 지운다
+    text = re.sub(r'(?<!\w)_+|_+(?!\w)', '', text)            # _강조_ 표시의 밑줄은 지운다(낱말 안 밑줄은 둔다)
+    text = text.lower()
+    text = re.sub(r'[^\w\- ]', '', text)
+    return text.replace(' ', '-')
+
+
+_ANCHORS = {}
+
+
+def anchors_of(path):
+    """그 .md 문서의 제목 앵커 집합(코드 블록 안 제목 제외, 같은 앵커가 또 나오면 -1, -2를 붙임)."""
+    if path in _ANCHORS:
+        return _ANCHORS[path]
+    seen, out, code = {}, set(), False
+    for line in read(path).splitlines():
+        if line.lstrip().startswith(('```', '~~~')):
+            code = not code
+            continue
+        m = None if code else re.match(r'^#{1,6}\s+(.*?)\s*#*\s*$', line)
+        if not m:
+            continue
+        base = gh_slug(m.group(1))
+        n = seen.get(base, 0)
+        out.add(base if n == 0 else '%s-%d' % (base, n))
+        seen[base] = n + 1
+    _ANCHORS[path] = out
+    return out
+
+
 def check_links(files):
     bad = []
     for f in files:
@@ -96,7 +131,7 @@ def check_links(files):
         p = os.path.join(ROOT, f)
         code = False
         for i, line in enumerate(read(p).splitlines(), 1):
-            if line.lstrip().startswith('```'):
+            if line.lstrip().startswith(('```', '~~~')):
                 code = not code
                 continue
             if code:
@@ -104,17 +139,44 @@ def check_links(files):
             line = re.sub(r'`[^`]*`', '', line)  # 코드 표기 안의 예시는 링크가 아니다
             for m in re.finditer(r'\]\(([^)\s]+)\)', line):
                 t = m.group(1)
-                if re.match(r'^[a-z]+:', t) or t.startswith('#'):
+                if re.match(r'^[a-z]+:', t):
                     continue
-                t = unquote(t.split('#', 1)[0])
-                if not t:
-                    continue
-                target = os.path.normpath(os.path.join(os.path.dirname(p), t))
-                if not os.path.exists(target):
+                path_part, _, anchor = t.partition('#')
+                path_part = unquote(path_part)
+                target = p if not path_part else os.path.normpath(os.path.join(os.path.dirname(p), path_part))
+                if path_part and not os.path.exists(target):
                     bad.append('%s:%d → %s' % (f, i, m.group(1)))
+                    continue
+                if anchor and target.endswith('.md') and os.path.isfile(target):
+                    if unquote(anchor).lower() not in anchors_of(target):
+                        bad.append('%s:%d → %s (앵커 없음)' % (f, i, m.group(1)))
     if not bad:
         return True, ['깨진 상대 링크 없음']
     return False, ['깨진 상대 링크 %d개:' % len(bad)] + ['  ' + b for b in bad[:30]]
+
+
+DIRECTORY_IMAGE_EXT = ('.png', '.jpg', '.jpeg', '.gif', '.webp', '.ico')
+OTHER_IMAGE_EXT = ('.svg', '.bmp', '.tif', '.tiff', '.heic', '.avif')
+
+
+def check_images(files):
+    """공식 디렉터리가 받지 않는 이미지 형식과, 어떤 문서·설정에서도 이름이 나오지 않는 이미지를 찾는다."""
+    images = [f for f in files if f.lower().endswith(DIRECTORY_IMAGE_EXT + OTHER_IMAGE_EXT)]
+    # 쓰임을 찾는 곳: 설계 메모(design-notes/)는 빼고, 이미지를 가리킬 수 있는 글·설정 파일 전부.
+    text_ext = ('.md', '.json', '.html', '.py', '.yml', '.yaml', '.toml', '.css', '.js', '.svg')
+    texts = [read(os.path.join(ROOT, f)).lower() for f in files
+             if f.endswith(text_ext) and not f.startswith('design-notes/') and f not in images]
+    bad = []
+    for f in images:
+        if f.lower().endswith(OTHER_IMAGE_EXT):
+            bad.append('%s — 공식 디렉터리가 받지 않는 형식(PNG·JPEG·GIF·WebP·ICO만)' % f)
+        # 폴더 이름까지 붙인 꼬리(예: .claude-plugin/icon.png)로 찾는다. 다른 폴더의 같은 이름 파일과 헷갈리지 않게.
+        tail = '/'.join(f.lower().split('/')[-2:])
+        if not any(tail in t for t in texts):
+            bad.append('%s — 어디서도 쓰이지 않음' % f)
+    if not bad:
+        return True, ['이미지 %d개, 문제 없음' % len(images)]
+    return False, ['이미지 문제 %d건:' % len(bad)] + ['  ' + b for b in bad]
 
 
 def check_lint():
@@ -196,6 +258,7 @@ def main():
         ('5 기밀 토큰', lambda: check_secrets(files)),
         ('6 작업 기록', check_tasks),
         ('7 플러그인 검증', check_validate),
+        ('8 이미지', lambda: check_images(files)),
     ]
     failed = 0
     for title, fn in checks:
