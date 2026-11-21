@@ -10,7 +10,7 @@
   },
   "homepage": "https://github.com/neisii/harness-naroo",
   "repository": "https://github.com/neisii/harness-naroo",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "keywords": ["ai-dlc", "harness", "workflow", "rules", "human-gate", "claude-code"],
   "icon": "./.claude-plugin/icon.png"
 }

@@ -1,5 +1,7 @@
 # NOTICE — anonymization & reference-copy disclosure
 
+> Copyright and license (Apache-2.0 from 0.2.0; MIT up to v0.1.2): see [`NOTICE`](./NOTICE) and [`LICENSE`](./LICENSE).
+
 이 하네스는 실제 SI 프로젝트에서 운영하던 것을 **익명화해 공개**한 것입니다.
 This harness was distilled from a real SI (system-integration) project and **anonymized before release**.
 

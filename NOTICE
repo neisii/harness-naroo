@@ -1,0 +1,17 @@
+AI-DLC Harness (naroo)
+Copyright 2026 Baek Ga-hui (백가희, neisii)
+https://github.com/neisii/harness-naroo
+
+This harness (rules, skills, guides, examples, and design notes) was designed
+and written by Baek Ga-hui (neisii), based on the author's own experience
+running AI-driven development on a real SI project.
+
+Licensing:
+- Versions up to and including v0.1.2 were released under the MIT License.
+- From 0.2.0 on, this project is licensed under the Apache License,
+  Version 2.0 (see LICENSE).
+
+If you redistribute this work or a derivative of it, the Apache License
+(section 4(d)) asks you to keep the attribution notices in this NOTICE file.
+
+Anonymization and reference-copy disclosure: see NOTICE.md.

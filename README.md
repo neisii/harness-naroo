@@ -145,6 +145,6 @@ python3 examples/reversibility_demo.py
 
 ## 라이선스
 
-MIT © 2026 neisii (Baek Ga Hui) — [`LICENSE`](./LICENSE) 참고.
+Apache-2.0 © 2026 neisii (Baek Ga Hui) — [`LICENSE`](./LICENSE), 저작자 표시는 [`NOTICE`](./NOTICE) 참고. v0.1.2까지는 MIT로 배포했다.
 
 만든 사람: [github.com/neisii](https://github.com/neisii). [Claude Code](https://claude.com/claude-code)로 만들었습니다. 이슈와 개선 제안 환영합니다.

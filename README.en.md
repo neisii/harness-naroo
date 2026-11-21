@@ -142,6 +142,6 @@ This harness eats its own dog food — on a real delivery, on its own design not
 
 ## License & credits
 
-MIT © 2026 neisii (Baek Ga Hui) — see [`LICENSE`](./LICENSE).
+Apache-2.0 © 2026 neisii (Baek Ga Hui) — see [`LICENSE`](./LICENSE) and the attribution in [`NOTICE`](./NOTICE). Versions up to v0.1.2 were released under MIT.
 
 Author: [github.com/neisii](https://github.com/neisii). Built with [Claude Code](https://claude.com/claude-code). Issues and improvements welcome.

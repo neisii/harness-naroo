@@ -33,6 +33,7 @@
 | survey-gen 스킬 + 설문 관리 체계(`docs/surveys/`) | 완료 |
 | server-ops 스킬(Spring Boot + Gradle 전용) | 완료 |
 | 규칙이 부르는 나머지 원본 도구 9종 처리: 예시로만 나오는 것은 "공개판에 없음" 표시, 절차가 기대는 것(AR-14·15, 테이블 명세, scenario-verify, ops-report)은 규칙을 고치거나 대체 절차를 적음. md2html·check_render 스킬화는 backlog T12 | 완료 |
+| 라이선스: 0.2.0부터 Apache-2.0(v0.1.2까지 MIT 유지). `LICENSE`·`NOTICE`(저작자 표시)·`plugin.json`·README 두 개·`NOTICE.md` | 완료(2026-11-21, 사용자 결정. 이유: 만든 사람이 누구인지 사용자가 알게 하려고) |
 | 규칙 후보 정리: 축약 승인, 근거 등급, 덮어쓰기 대체는 스크래치에만, BR-03과 CM-06의 관계, E-7 충돌 판정 | 미완 |
 
 **용어 (한자리에서 정함)**
