@@ -68,7 +68,7 @@
 
 아래 경로·패턴은 모든 <접두사>_* 프로젝트에 공통인 추적 제외 대상이다. 커밋하지 않는다는 뜻이며 파일을 지우라는 뜻이 아니다. 각 프로젝트의 `.gitignore`와 별개의 추가 안전장치라서, `.gitignore`에 없어도 해당하면 제외한다.
 
-> **환경값(이 팀 예시):** 이 절의 구체 파일·경로(`logback-spring.xml`·`application*.yaml`·`gradle.properties`, MyBatis `mapper/`, Flyway `db/migration/`, `static/js/common` 등)는 이 팀 스택(Java·Spring·Gradle·MyBatis·Flyway) 예시다. 핵심 원리는 "빌드 산출물·로컬 설정·비밀·대용량 바이너리를 커밋하지 않는다"이며, 구체 패턴은 내 스택의 대응물로 바꿔 읽는다(`docs/환경값-정의.md` C항목).
+> **환경값(이 팀 예시):** 이 절의 구체 파일·경로(`logback-spring.xml`·`application*.yaml`·`gradle.properties`, MyBatis `mapper/`, Flyway `db/migration/`, `static/js/common` 등)는 이 팀 스택(Java·Spring·Gradle·MyBatis·Flyway) 예시다. 핵심 원리는 "빌드 산출물·로컬 설정·비밀·대용량 바이너리를 커밋하지 않는다"이며, 구체 패턴은 내 스택의 대응물로 바꿔 읽는다(`docs/환경값-정의.md` C항목). 목록에 `README.md`·`CLAUDE.md`·`.gitignore`·`.github`·`Dockerfile`·빌드 스크립트처럼 보통 커밋하는 파일이 있는 것은 이 팀이 그 파일들을 따로 관리해서다. 내 저장소의 제외 목록은 환경값 C에 선언하고, 선언이 없으면 핵심 원리에 해당하는 파일만 제외한다.
 
 - 1차 대조: 커밋 계획을 만들 때(CS-01).
 - 2차 대조: 스테이징을 확인할 때(CS-02).
