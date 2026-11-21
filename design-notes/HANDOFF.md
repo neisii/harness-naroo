@@ -4,7 +4,7 @@
 
 ## 1. 한눈에
 
-- **레포:** github.com/neisii/harness-naroo (공개, `main`). 작업 브랜치 `0.2.0`(2026-11-21 낮까지 푸시, 그 밤 관문 3 기록 커밋은 미푸시). push는 사용자 요청 때만. 관문 3 실전 예제 저장소: github.com/neisii/gate3-trial(공개).
+- **레포:** github.com/neisii/harness-naroo (공개, `main`). 작업 브랜치 `0.2.0`(2026-11-21 밤 관문 3 기록까지 푸시, 원격과 같음). push는 사용자 요청 때만. 관문 3 실전 예제 저장소: github.com/neisii/gate3-trial(공개).
 - **두 층:** (a) 공개 플러그인 — 스킬 13개(+seosul-lint, +reversibility-gate) + `rules/`(S 차세대 하네스 정본). (b) `design-notes/` — 하네스 **다음 버전** 설계 방법론.
 - 이 핸드오프는 **(b) design-notes** 작업을 잇기 위한 것.
 - **사용자:** 백가희(neisii). 출처: S 차세대 **폐쇄망 SI**(익명화). 설계 노트에서 1인칭 "내" = 사용자.
@@ -150,7 +150,7 @@
 
 리로드: 불필요 (2026-11-21 저녁 gate3 세션은 스킬 코드·SKILL.md·rules를 안 건드림. 바꾼 건 seosul-lint 사전 `skills/seosul-lint/번역투-교정사전.md` 37번뿐이고, 스크립트가 실행할 때마다 사전을 읽으며 지금 마켓은 로컬 폴더라 그대로 반영됨 — 시험 중 실무자 린터가 바로 잡는 것을 확인). 앞 세션의 `rules/`·스킬 변경은 그 세션에서 리로드함. 버전 올리기·`claude plugin update`는 로컬 폴더 마켓에선 필요 없다(`plugin.json`은 0.2.0-rc.2). 마켓을 GitHub로 되돌린 뒤에는 아래 "설치본은 스냅샷" 절차를 따른다.
 
-**현재 상태(2026-11-21 밤):** `0.2.0` 브랜치, **이 세션의 커밋은 미푸시**(push는 사용자 요청 때만). **관문 1·2·4 통과, 관문 3은 실행 완료 — "가이드 고친 뒤 통과"**(침범 0·잘못된 승인 0 통과, 한 방 작동, "가이드대로 했는데 막힌 곳"이 여럿이라 고칠 거리 5건). 기록 정본은 [`tasks/release-0.2.0/gate3-관측기록.md`](./tasks/release-0.2.0/gate3-관측기록.md) 맨 위 "판정" 절, 점검표는 [`tasks/release-0.2.0/checklist.md`](./tasks/release-0.2.0/checklist.md). 관문 2는 `python3 design-notes/tools/release_check.py`로 잰다(2026-11-21: 실패 0).
+**현재 상태(2026-11-21 밤):** `0.2.0` 브랜치, 관문 3 기록까지 푸시함(`33ef649`, push는 사용자 요청 때만). **관문 1·2·4 통과, 관문 3은 실행 완료 — "가이드 고친 뒤 통과"**(침범 0·잘못된 승인 0 통과, 한 방 작동, "가이드대로 했는데 막힌 곳"이 여럿이라 고칠 거리 5건). 기록 정본은 [`tasks/release-0.2.0/gate3-관측기록.md`](./tasks/release-0.2.0/gate3-관측기록.md) 맨 위 "판정" 절, 점검표는 [`tasks/release-0.2.0/checklist.md`](./tasks/release-0.2.0/checklist.md). 관문 2는 `python3 design-notes/tools/release_check.py`로 잰다(2026-11-21: 실패 0).
 
 **이번 세션(2026-11-21 저녁, 관문 3 실행)에 정한 것·알게 된 것 (재논의 불필요, 근거는 gate3-관측기록):**
 - **테스트베드:** 공개 저장소 `neisii/gate3-trial`(실전 예제로 남김, 실패해도 공개에 사용자 동의). 로컬 `~/Development/gate3/gate3-trial`, 관측 노트 원본 `~/Development/gate3/observer/`(저장소 밖, 시험 중 실무자에게 안 보이게). 작업: 주문 처리 미니 시스템, W0 뼈대 → W1 부분취소·W2 매출·W3 알림 동시 → 후속 W2PC·W3PC. 함정(공통 코드 `부분취소`가 W2·W3을 깨뜨림)은 관측자만 앎. 최종 main `eddc8ba`, 테스트 90건 통과, 원격엔 main만, 세션·워크트리·작업 브랜치 정리 끝(대화 기록 `~/.claude/projects/-Users-neisii-Development-gate3-gate3-trial/`은 집계 근거로 남김).
