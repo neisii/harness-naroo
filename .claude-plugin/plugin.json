@@ -1,7 +1,7 @@
 {
   "name": "ai-dlc-harness",
   "displayName": "AI-DLC Harness (naroo)",
-  "version": "0.2.0-rc.2",
+  "version": "0.2.0",
   "description": "A Claude Code harness for AI-driven development on SI/enterprise projects: a 12-step rule system with human gates, role sessions, and reusable skills, distilled from a real next-gen public-procurement build.",
   "author": {
     "name": "Baek Ga-hui (neisii)",
