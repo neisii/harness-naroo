@@ -1,5 +1,6 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# Copyright 2026 Baek Ga-hui (neisii) - https://github.com/neisii/harness-naroo
+# SPDX-License-Identifier: Apache-2.0
 """session-wake — 이름으로 bg 세션을 복사본 없이 깨운다.
 
 사용법: python session_wake.py <세션명> [--dry-run]
@@ -104,7 +105,7 @@ def main(argv):
         print((sout.strip() or '(출력 없음)') + ' (종료 코드 %d)' % scode)
         print('다음: 원본 "%s"에 SendMessage로 지시하세요(복사본에는 보내지 않습니다).' % name)
     else:
-        print('[재개 완료] 복사본 없이 %s가 같은 id·이름으로 복귀했습니다. 기본 시작 프롬프트·--disallowedTools는 다시 넣지 않습니다.' % name)
+        print('[재개 완료] 복사본 없이 %s가 같은 id·이름으로 복귀했습니다. 기본 시작 프롬프트는 다시 넣지 않고, --disallowedTools 등 최초 기동 옵션은 Claude Code가 저장된 값으로 다시 적용합니다(위 note 참고).' % name)
 
     final = same_name(list_agents(), name)
     print('최종 같은 이름 레코드: %d건 %s' % (

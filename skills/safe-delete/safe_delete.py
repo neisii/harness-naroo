@@ -1,5 +1,6 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# Copyright 2026 Baek Ga-hui (neisii) - https://github.com/neisii/harness-naroo
+# SPDX-License-Identifier: Apache-2.0
 """safe_delete — 삭제 도구(기본은 휴지통 이동). `rm -rf` 대신 이걸 쓴다.
 
 사용법:

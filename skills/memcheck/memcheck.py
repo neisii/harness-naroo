@@ -1,5 +1,6 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# Copyright 2026 Baek Ga-hui (neisii) - https://github.com/neisii/harness-naroo
+# SPDX-License-Identifier: Apache-2.0
 """memcheck — OS 메모리(총량/사용/여유)와 상위 java 프로세스별 메모리를 보여주는 읽기 전용 CLI.
 
 사용법:

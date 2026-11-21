@@ -32,25 +32,26 @@ WT-01 면제 대상을 제외하고, 어떤 작업이든(화면 구현에 국한
 1. `<팀구분>/main`을 기준으로 `<팀구분>/<이름약자>_dev/<작업ID>` 작업 브랜치를 새로 만든다(이름 형식은 7단계 BR-01).
 2. 그 브랜치로, 세션이 바라보는 프로젝트 하위 `.claude\worktrees`에 워크트리를 만든다(WT-05).
 3. checkout 전에 sparse-checkout으로 `docs/`를 제외한다(non-cone 패턴: `/*` + `!/docs/`). `.metrics/`는 제외하지 않는다(WT-13).
-4. 워크트리의 `.claude\settings.local.json`에 환경변수 `PRJ_METRICS_DIR={본인 경로}\.prj-ai-metrics\<프로젝트>`를 기록한다(원장을 저장소 밖에 기록해 자동커밋을 막는다).
+4. (메트릭 원장을 쓰는 팀만) 워크트리의 `.claude\settings.local.json`에 환경변수 `PRJ_METRICS_DIR={본인 경로}\.prj-ai-metrics\<프로젝트>`를 기록한다(원장을 저장소 밖에 기록해 자동커밋을 막는다). 원장을 쓰지 않는 팀은 `docs/환경값-정의.md` A에 "메트릭 원장 없음"으로 선언하고 이 단계를 건너뛴다.
 5. 이후 조사·청사진 작성·구현은 모두 이 워크트리 안에서 한다.
 
 ### WT-03 · 워크트리는 스크립트로만 만든다
 
-- 위 1~4번은 `<공유문서 루트>\scripts\worktree\new-worktree.ps1`로 한 번에 수행한다.
+- 위 1~4번은 `worktree` 스킬로 한 번에 수행한다(Windows는 `python3` 대신 설치된 Python 명령, 예: `python`·`py`).
   ```
-  new-worktree.ps1 -Project <자기 프로젝트 폴더명> -Branch <브랜치명> -Name <워크트리명>
+  python3 "${CLAUDE_PLUGIN_ROOT}/skills/worktree/new_worktree.py" --project <자기 프로젝트 폴더명> --branch <브랜치명> --name <워크트리명>
   ```
-- 기준 브랜치(`-Base`)는 생략하면 `-Branch`의 첫 구간에서 `<팀구분>/main`으로 정해진다(예: `team2/ghbaek_dev/...` → `team2/main`). 로컬에 그 브랜치가 없으면 `main`으로 대체하고 알린다(예: catalog).
+- 기준 브랜치(`--base`)는 생략하면 `--branch`의 첫 구간에서 `<팀구분>/main`으로 정해진다(예: `team2/ghbaek_dev/...` → `team2/main`). 로컬에 그 브랜치가 없으면 `main`으로 대체하고 알린다(예: catalog).
 - 스크립트는 `git fetch`로 원격을 확인하고, 로컬 기준 브랜치가 `origin`보다 뒤처져 있으면 브랜치를 만들지 않고 중단한다. 이때 로컬 기준 브랜치를 임의로 갱신하지 않고 사람(또는 2단계 RL-12 위임에 따라 qa-master)에게 확인받는다. **[사람 확인]**
 - `git fetch`가 실패하면(로그인 만료 등) 아무것도 만들지 않고 중단한다. 사람이 `! git -C <프로젝트 경로> fetch`로 한 번 로그인한 뒤 다시 실행한다.
+- 기준 브랜치가 일부러 이 PC에만 있는 브랜치면(예: 아직 push하지 않은 브랜치 위에 후속 작업을 쌓을 때) 스크립트에 `--local-base`를 준다. 스크립트가 원격에 정말 없는지 확인하고, 원격에 있으면 거부한다. 손으로 `git worktree add`를 하지 않는다.
 - 스크립트는 저장소 로컬 설정으로 `core.longpaths=true`를 켠다(WT-06).
 - 수동으로 `git worktree add`를 치지 않는다(sparse·env가 빠진다).
   - 예외: 읽기 전용 확인용 임시 detach 워크트리(`git worktree add --detach`, 예: API 명세 생성)는 수동으로 만들 수 있다. 커밋하지 않고 끝나면 즉시 `git worktree remove`로 지우며(GL-28·WT-14), 구현·수정 작업에는 쓰지 않는다. 이름은 짧게 한다(예: `t1`). 긴 이름은 Windows 260자 경로 제한에 걸려 체크아웃이 일부 실패할 수 있다(실제 사례 2026-10-28: `apispec-tmp-20261028`에서 긴 클래스명 소스 파일 미체크아웃, `t1`로 재생성해 해결, api-gen-master 보고).
-- 배경(bg) developer 세션은 하네스 격리 없이 기동한다(전역 설정 `worktree.bgIsolation`이 `"none"`). 하네스가 `worktree-<랜덤이름>`으로 자동 격리한 세션을 발견하면 작업을 시작하지 않고 qa-master에게 보고한다.
-- 워크트리는 이 절의 `new-worktree.ps1`로만 만들고 `EnterWorktree` 도구로 만들거나 들어가지 않는다. 하네스 격리가 걸리면 docs 원본 경로 쓰기와 `new-worktree.ps1` 실행이 막힌다.
+- 배경(bg) developer 세션을 띄우기 전에, **프로젝트 설정(`.claude/settings.json`)에 `worktree.bgIsolation`을 `"none"`으로 넣는다**(전역이 아닌 프로젝트별 — 하네스를 안 쓰는 저장소까지 가드가 풀리지 않도록). 이 값이 없으면 기본값 `"worktree"`가 bg 세션의 로컬 체크아웃(docs 원본 경로 포함) 쓰기를 막아, 세션을 `worktree-<랜덤이름>`으로 자동 격리한다. 그렇게 자동 격리된 세션을 발견하면 작업을 시작하지 않고 qa-master에게 보고한다.
+- 워크트리는 이 절의 `worktree` 스킬로만 만들고 `EnterWorktree` 도구로 만들거나 들어가지 않는다. 하네스 격리가 걸리면 docs 원본 경로 쓰기와 `worktree` 스킬 실행이 막힌다.
 - 가드에 막혀도 Bash heredoc 등으로 우회하지 않고 qa-master에게 보고한다(2단계 RL-12).
-- 아래는 `new-worktree.ps1`이 내부에서 수행하는 순서이며 직접 실행하지 않는다. 순서가 중요하다: `git worktree add --no-checkout` → sparse 설정 → `git checkout`. sparse 설정 전에 checkout하면 파일이 전부 펼쳐졌다 지워져 상태가 꼬인다.
+- 아래는 `worktree` 스킬이 내부에서 수행하는 순서이며 직접 실행하지 않는다. 순서가 중요하다: `git worktree add --no-checkout` → sparse 설정 → `git checkout`. sparse 설정 전에 checkout하면 파일이 전부 펼쳐졌다 지워져 상태가 꼬인다.
 
 ### WT-04 · 업스트림을 설정하지 않는다
 
@@ -75,7 +76,7 @@ WT-01 면제 대상을 제외하고, 어떤 작업이든(화면 구현에 국한
 
 | 작업ID | 압축 | 워크트리명 |
 |---|---|---|
-| `screen-020` | `b-m-i-deliveryRequestDetail` | `b-m-i-deliveryRequestDetail-{작업명}` |
+| `buy-mydesk-inspection-deliveryRequestDetail` | `b-m-i-deliveryRequestDetail` | `b-m-i-deliveryRequestDetail-{작업명}` |
 
 - 긴 경로 오류를 막기 위해 git 명령에 `core.longpaths=true`를 기본값으로 쓴다(`-c core.longpaths=true` 또는 저장소 로컬 설정, 커밋과 무관). 이 설정에서는 `git status`가 긴 경로 파일을 `AM`으로 잘못 표시하므로 `git add -A`와 `git commit -a`는 쓰지 않는다.
 
@@ -114,45 +115,47 @@ WT-01 면제 대상을 제외하고, 어떤 작업이든(화면 구현에 국한
 
 - 기본: 로컬 포트 + 10000(예: 로컬 buy 서버가 8090이면 워크트리는 18090).
 - 구동 전에 항상 OS 레벨 포트 조회(Windows는 `Get-NetTCPConnection` 또는 `netstat`)로 해당 프로젝트가 실제로 LISTEN 중인 포트를 확인한다.
-  - `sscheck` 스킬의 `server-status.ps1 [-Project <name>] [-Json]`(위치는 스킬 문서가 정본)을 쓰면 7개 프로젝트의 포트·PID·로컬/워크트리 여부·브랜치·HEAD·미커밋 건수·HTTP 헬스를 한 번에 볼 수 있고, 기대 포트(로컬+10000)와 다르면 경고가 나온다. 점유 목적을 판단할 때 이 정보를 활용한다.
-  - 이 스크립트는 파일·프로세스·설정을 바꾸지 않는 조회 도구이며, 떠 있는 서버마다 `http://127.0.0.1:<port>/`에 GET을 1회 보낸다. 어느 세션에서나 쓸 수 있다.
-  - 같은 스킬의 `server-stop.ps1`은 확인 없이 지정 포트의 서버를 바로 종료한다. 종료는 아래 사용 완료 확인 절차와 WT-12를 따르며, 이 도구의 존재가 그 절차를 대체하지 않는다.
+  - `server-ops` 스킬의 `status [<서버>] [--json]`(위치는 스킬 문서가 정본)을 쓰면 등록된 서버들의 포트·PID·브랜치·HEAD·미커밋 건수·HTTP 헬스를 한 번에 볼 수 있고, 기대 포트(로컬+10000)와 다르면 경고가 나온다. 점유 목적을 판단할 때 이 정보를 활용한다. `server-ops`는 Spring Boot + Gradle 프로젝트 전용이다. 맞지 않는 환경이면 쓰지 않고, 환경 차이로 실행할 수 없다고 사람에게 알린다(스킬 문서의 "적용 판단").
+  - `status`는 파일·프로세스·설정을 바꾸지 않는 조회 명령이며, 떠 있는 서버마다 등록된 헬스 URL에 GET을 1회 보낸다(등록이 없으면 보내지 않는다). 어느 세션에서나 쓸 수 있다.
+  - 같은 스킬의 `stop`은 기본으로 종료 대상만 보여 주고, `--yes`가 있을 때만 종료한다. `--yes`는 아래 사용 완료 확인 절차와 WT-12를 거친 뒤에만 붙인다. 이 명령의 존재가 그 절차를 대체하지 않는다.
 - 기본 포트가 비어 있으면 그 포트로 구동한다.
 - 기본 포트가 점유돼 있으면 임의로 다른 포트를 고르지 않고 아래 순서를 따른다.
   1. 점유한 서버가 어느 세션의 어떤 목적인지 먼저 확인한다.
   2. 그 세션에 사용이 끝났는지 묻는다(연결은 6단계 AG-02 승인과 AG-06 handshake 후).
   3. 사용이 끝났으면 그 서버를 종료하고 기본 포트로 재기동한다.
   4. 사용 중이면 사람에게 "끝날 때까지 기다렸다가 재기동할까요?"를 예/아니오로 묻는다.
-- 새 서버를 기동하기 직전(포트 확인 뒤)에 `memcheck` 스킬(`<공유문서 루트>\scripts\memcheck\memcheck.ps1`, 읽기 전용)로 여유 물리메모리와 java 프로세스별 사용량을 확인한다.
+- 새 서버를 기동하기 직전(포트 확인 뒤)에 `memcheck` 스킬(`${CLAUDE_PLUGIN_ROOT}/skills/memcheck/memcheck.py`, 읽기 전용)로 여유 물리메모리와 java 프로세스별 사용량을 확인한다.
   - 여유가 서버 기동 기준(2.5GB) 미만이어서 경고가 뜨면 AI가 혼자 진행하거나 중단하지 않고, 결과를 제시해 사람(또는 2단계 RL-12에 따라 qa-master)에게 진행 여부를 확인받는다. 점유 중인 java 서버가 다른 세션 것이면 종료하지 않고 위 점유 절차를 따른다.
   - 테스트·훅(gradle) 실행 전에도 같은 방식으로 확인하되 기준은 4.0GB다.
   - 이미 떠 있는 서버로 검증만 하는 경우(신규 기동 아님)는 적용하지 않는다.
 
-### WT-11 · 서버 빌드·구동은 기존 스크립트로 한다 (워크트리 여부와 무관)
+### WT-11 · 서버 빌드·구동은 `server-ops` 스킬로 한다 (워크트리 여부와 무관)
 
-`gradlew`/`bootRun`을 직접 조립하지 않고 `<공유문서 루트>\scripts\PRJ-server`의 스크립트를 쓴다. 로컬 체크아웃에서 띄울 때도 같다.
+`gradlew`/`bootRun`을 직접 조립하지 않고 `server-ops` 스킬을 쓴다. 로컬 체크아웃에서 띄울 때도 같다. 서버는 먼저 `server-ops init`으로 설정 파일(`.claude/harness-servers.json`)에 등록한다. `server-ops`는 Spring Boot + Gradle 프로젝트 전용이며, 스킬 문서의 "적용 판단"에서 맞지 않으면 쓰지 않고 환경 차이로 실행할 수 없다고 사람에게 알린다.
 
-| 용도 | 스크립트 | 비고 |
+| 용도 | 명령 | 비고 |
 |---|---|---|
-| 빌드 | `build.ps1 <프로젝트> [-Dir <워크트리경로>]` 또는 `build-<프로젝트>.cmd`(`build-all.cmd` 포함) | `clean build -x test`라 테스트는 돌지 않는다 |
-| 구동 | `start.ps1 <프로젝트> [-Port N] [-Dir <워크트리경로>]` 또는 `start-<프로젝트>.cmd`(`start-all.cmd` 포함) | 워크트리에서는 `-Dir`와 **`-Port`를 반드시 함께** 지정한다 |
+| 빌드 | `server-ops build <서버> [--dir <워크트리경로>]` | 이 팀 예시 설정은 `clean build -x test`라 테스트는 돌지 않는다 |
+| 구동 | `server-ops start <서버> [--dir <워크트리경로>] [--port N]` | `--dir`를 주면 포트에 워크트리 차이값(기본 +10000)이 더해진다 |
+| 종료 | `server-ops stop <서버> [--dir <워크트리경로>] [--port N] [--yes]` | `--yes`가 없으면 대상만 보여 준다(WT-10 사용 완료 확인 뒤에 붙인다). 워크트리 서버는 띄울 때와 같은 `--dir`를 준다. 빠뜨리면 본 폴더 서버가 대상이 된다. 포트가 닫혔는데 PID만 살아 있으면 `--yes`여도 종료하지 않는다 |
+| 상태 | `server-ops status [<서버>]` | 읽기 전용 |
 
-- `start.ps1`은 `-Port`가 없으면 로컬 고정 포트(buy 8090 등)로 뜨고, 포트가 점유돼 있으면 에러로 끝날 뿐 선택지를 주지 않는다. 그래서 점유 확인(WT-10)은 AI가 구동 전에 한다.
-- 스크립트는 출력을 로그 파일(`<프로젝트 루트>\logs\<p>.log`, `<p>-build.log`)에만 남긴다. 결과는 로그 끝부분이나 필요한 줄만 읽는다.
+- `start`는 포트가 점유돼 있으면 다른 포트를 고르지 않고 멈춘다. 점유 확인 절차(WT-10)는 AI가 따른다.
+- 출력은 로그 파일(`.claude/server-ops/<서버>-<포트>.log`, `<서버>-build.log`)에만 남는다. 결과는 로그 끝부분이나 필요한 줄만 읽는다.
 - 프로젝트별 CLAUDE.md·AGENTS.md의 "서버 실행 규칙"(기본 포트를 `curl`로 확인하고 꺼져 있으면 `./gradlew bootRun &` 직접 실행)보다 이 규칙이 우선한다.
 - 이미 떠 있는 서버는 다른 세션이 쓸 수 있으므로, 그 세션의 사용 완료를 확인한 뒤에만 종료한다(WT-10).
-- 이미 떠 있는 서버로 검증하기 전에 `server-status`의 Branch·Head가 검증 대상 커밋(담당 세션이 알려준 기준 브랜치 최신)과 같은지 확인한다. 다르면 낡은 코드로 검증하지 않고 담당 세션에 재기동을 요청한다(WT-12).
+- 이미 떠 있는 서버로 검증하기 전에 `server-ops status`의 브랜치·HEAD가 검증 대상 커밋(담당 세션이 알려준 기준 브랜치 최신)과 같은지 확인한다. 다르면 낡은 코드로 검증하지 않고 담당 세션에 재기동을 요청한다(WT-12).
 - 서버 구동·병합 현황 보고의 기준 브랜치는 `main`(origin/main)이다. `<팀구분>/main`이 아니며, 작업 브랜치의 기준(WT-02)과 구분한다. 구동 전에 로컬 `main`을 fetch한 뒤 fast-forward로 최신화한다.
 - `gradlew`를 직접 실행하는 예외:
   1. WT-14 워크트리 삭제 전 `gradlew clean`
-  2. ArchitectureTest와 전체 테스트(`build.ps1`은 `-x test`). `gradlew clean test` 등을 로그 파일로 리다이렉트해 실행하고 결과 XML·`BUILD` 줄 요약만 집계한다.
+  2. ArchitectureTest와 전체 테스트(이 팀 예시의 `server-ops build` 설정은 `-x test`). `gradlew clean test` 등을 로그 파일로 리다이렉트해 실행하고 결과 XML·`BUILD` 줄 요약만 집계한다.
 - 훅·단위 테스트(gradle)는 팀 간에 한 번에 하나만 돌린다. 서버가 떠 있는 동안 gradle 데몬 정리(`gradlew --stop`)는 서버가 같이 죽으므로 하지 않는다.
 
 ### WT-12 · 부모 경로 세션은 담당 서버를 직접 띄우지 않는다
 
 - 작업 경로가 부모 `<워크스페이스>\prj`인 세션(프로젝트별 담당 세션이 아닌 루트·검증 세션)은 담당 세션이 있는 프로젝트(admin·buy·catalog·contract·member·sell)의 서버를 포트가 비어 있어도 직접 띄우지 않는다.
 - 담당 세션에 "현재 워크트리 기준 재구동"을 요청한다(`SendMessage`, 6단계 AG-02 승인과 AG-06 handshake 후).
-- 각 프로젝트 담당 세션은 자기 서버를 WT-11 스크립트로 직접 구동한다.
+- 각 프로젝트 담당 세션은 자기 서버를 WT-11의 `server-ops`로 직접 구동한다.
 - 담당 세션이 없는 프로젝트(settlement 등)는 부모 경로 세션이 직접 구동할 수 있다.
 
 ---
@@ -222,7 +225,7 @@ WT-13를 마치고 **사람이 삭제를 확인한 뒤**(또는 qa-master가 승
 
 | 시점 | 확인할 것 | 어긋나면 |
 |---|---|---|
-| ① 워크트리 생성 직후 | `new-worktree.ps1`로 만들었는가(수동 `git worktree add` 금지), `git sparse-checkout list`에 `!/docs/`, 워크트리 `.claude\settings.local.json`에 `PRJ_METRICS_DIR`, **세션 셸에서 실제 값 출력**(PowerShell `$env:PRJ_METRICS_DIR`, bash `echo $PRJ_METRICS_DIR`)이 `{본인 경로}\.prj-ai-metrics\<프로젝트>`인지, `git branch -vv`에 추적 정보 없음 | 작업을 시작하지 않고 보고 |
+| ① 워크트리 생성 직후 | `worktree` 스킬로 만들었는가(수동 `git worktree add` 금지), `git sparse-checkout list`에 `!/docs/`, `git branch -vv`에 추적 정보 없음. (메트릭 원장을 쓰는 팀만) 워크트리 `.claude\settings.local.json`에 `PRJ_METRICS_DIR`, **세션 셸에서 실제 값 출력**(PowerShell `$env:PRJ_METRICS_DIR`, bash `echo $PRJ_METRICS_DIR`)이 `{본인 경로}\.prj-ai-metrics\<프로젝트>`인지. 환경값 A에 "메트릭 원장 없음"으로 선언한 팀은 이 값이 비어 있어도 어긋남이 아니다 | 작업을 시작하지 않고 보고 |
 | ② 산출물 쓰기 직전 | 쓰려는 경로가 원본 `<프로젝트>\docs\...`인가, 경로에 `.claude\worktrees`가 들어 있지 않은가 | 쓰지 않고 중단 후 보고 |
 | ③ 커밋 계획 제시 전 | 스테이징 후보에 `docs/`가 섞이지 않았는가, WT-13 일괄 커밋이 아닌 일반 커밋에 `.metrics/`가 섞이지 않았는가 | 계획에서 걸러내고 걸러낸 사실을 계획에 명시 |
 | ④ 작업 중 이상 신호 | 워크트리 안에 `.metrics/` 변경이나 `chore(metrics)` 자동커밋이 새로 생기면 env 누락 신호 | 임의로 원복하지 않고 보고 |
@@ -234,7 +237,7 @@ WT-13를 마치고 **사람이 삭제를 확인한 뒤**(또는 qa-master가 승
 
 - [ ] WT-01 작업이 면제 대상인지 판단했고, 애매하면 묻지 않고 워크트리를 만들었는가?
 - [ ] WT-02 화면 구현이 아닌 작업도 포함해, 시작 전에 `<팀구분>/main` 기준으로 새 브랜치를 만들고 그 브랜치로 만든 워크트리 안에서 작업했는가?
-- [ ] WT-03 `new-worktree.ps1`로 만들었는가(수동 `git worktree add` 없이)? 생성 직후 세션 셸에서 `PRJ_METRICS_DIR` 실제 값을 출력해 확인했는가(WT-16 ①)?
+- [ ] WT-03 `worktree` 스킬로 만들었는가(수동 `git worktree add` 없이)? (메트릭 원장을 쓰는 팀만) 생성 직후 세션 셸에서 `PRJ_METRICS_DIR` 실제 값을 출력해 확인했는가(WT-16 ①)?
 - [ ] WT-04 새 브랜치를 `-t` 없이 만들고 `git branch -vv`로 추적 정보가 없음을 확인했는가?
 - [ ] WT-05 프로젝트 하위 `.claude\worktrees`에 만들었는가?
 - [ ] WT-06 워크트리명이 `{작업ID 압축}-{작업명}` 규칙을 따랐는가?
@@ -243,7 +246,7 @@ WT-13를 마치고 **사람이 삭제를 확인한 뒤**(또는 qa-master가 승
 - [ ] WT-09 push를 임의로 실행하지 않고(qa-master 승인 기록이 있는 경우만 예외), 로컬과 같은 브랜치명을 명시한 명령문만 제시했는가?
 - [ ] WT-10 구동 전 OS 레벨로 기본 포트(로컬+10000)를 확인했고, 점유돼 있으면 점유 목적 확인 → 그 세션에 사용 완료 질의 → 완료면 재기동, 사용 중이면 대기 여부(예/아니오)를 물었는가? 새 서버 기동 전 `memcheck`로 여유 메모리(서버 2.5GB, 테스트·훅 4.0GB)를 확인했고, 경고 시 사람 또는 qa-master에게 진행 여부를 확인받았는가?
 - [ ] WT-11 훅·단위 테스트(gradle)를 팀 간에 한 번에 하나만 돌렸고, 서버가 떠 있는 동안 `gradlew --stop`을 하지 않았는가?
-- [ ] WT-11 빌드·구동을 `<공유문서 루트>\scripts\PRJ-server` 스크립트로 했고(로그는 끝부분만), 워크트리에서 `-Dir`와 `-Port`를 함께 지정했는가? 떠 있는 서버로 검증할 때 Branch·Head를 확인했는가?
+- [ ] WT-11 빌드·구동을 `server-ops`로 했고(로그는 끝부분만), 워크트리에서는 구동·종료 모두 `--dir`를 지정했는가? 환경이 맞지 않으면 쓰지 않고 사람에게 알렸는가? 떠 있는 서버로 검증할 때 Branch·Head를 확인했는가?
 - [ ] WT-12 부모 경로(`prj`) 세션이 담당 세션이 있는 프로젝트(admin·buy·catalog·contract·member·sell)의 서버를 직접 띄우지 않고 담당 세션에 요청했는가?
 - [ ] WT-13 삭제 직전 `.metrics` 일괄 커밋을 11단계 절차대로 하고 push(기본은 사람, qa-master 승인 기록이 있으면 예외)까지 확인했는가?
 - [ ] WT-14 서버·gradle 종료 → `gradlew clean` → (본인이 수정한 yaml 복원) → `git worktree remove` 순서로 삭제했는가?

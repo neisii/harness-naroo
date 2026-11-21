@@ -1,5 +1,6 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# Copyright 2026 Baek Ga-hui (neisii) - https://github.com/neisii/harness-naroo
+# SPDX-License-Identifier: Apache-2.0
 """reversibility_demo — "5분 입구" 1부: 가역성 분류표(07)를 예시 4~5개로 보여준다.
 
 라우팅 구현은 스킬이 정본이다: skills/reversibility-gate/reversibility_gate.py.

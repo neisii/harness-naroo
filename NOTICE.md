@@ -1,4 +1,6 @@
-# NOTICE — anonymization & reference-copy disclosure
+# NOTICE — anonymization disclosure
+
+> Copyright and license (Apache-2.0 from 0.2.0; MIT for 0.1.x, up to 0.1.3): see [`NOTICE`](./NOTICE) and [`LICENSE`](./LICENSE).
 
 이 하네스는 실제 SI 프로젝트에서 운영하던 것을 **익명화해 공개**한 것입니다.
 This harness was distilled from a real SI (system-integration) project and **anonymized before release**.
@@ -30,12 +32,17 @@ the same placeholder everywhere:
 
 ## Important / 유의
 
-- **The bundled scripts are reference copies.** Paths (`{본인 경로}`), service names, and table names were
-  genericized, so they will **not run as-is** in your environment — adapt the values first. Scripts shipped as
-  installable skills (see `skills/`) were rewritten to be portable and use only the standard library.
+- **Paths, service names, and table names in the rule documents were genericized** (e.g. `{본인 경로}`,
+  `<워크스페이스>`); read them as your own values ([`docs/환경값-정의.md`](./docs/환경값-정의.md)). All shipped
+  scripts (`skills/`, `examples/`) run as-is with the Python standard library.
 - **No secrets** (DB accounts, tokens, passwords) are included anywhere in this repository.
 - The original harness ran on **Windows**; Windows-only tooling (PowerShell scripts, unsigned `.exe`/C# widgets)
   was **excluded** from this public release and is only described, not shipped.
 - The rule documents under `rules/` are the **canonical source (정본)** and are kept in Korean.
+- **Skill scripts have no shebang line.** Run them with Python as each `SKILL.md` shows
+  (`python3 "${CLAUDE_PLUGIN_ROOT}/skills/<name>/<script>.py"`); they are not meant to be executed directly (`./script.py`).
+- **Dogfood records in `design-notes/` (0.2.0)** come from the author's own sample repository, not from the
+  client project. They contain no client data. / `design-notes/`의 개밥(dogfooding) 기록은 원 프로젝트가 아니라
+  작성자가 만든 시험용 저장소에서 나온 것이며, 고객 데이터를 담고 있지 않습니다.
 
 If you believe any residual identifier slipped through, please open an issue.

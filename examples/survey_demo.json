@@ -1,0 +1,32 @@
+{
+  "title": "실무자 세션 둘이 올린 결정 모음",
+  "note": "가이드 10장 '해 보기'용 예시다. 실제 프로젝트의 결정이 아니다.",
+  "slug": "가이드10장-예시",
+  "items": [
+    {
+      "id": "1",
+      "title": "작업 shutdown-sse: 서버가 종료될 때 열려 있는 스트림 처리",
+      "background": "서버가 종료 신호를 받으면 열려 있는 스트림(SSE) 연결을 어떻게 끝낼지 정해야 한다. 실무자 세션이 청사진 승인 전에 물었다.",
+      "options": [
+        {"key": "A", "label": "종료 이벤트를 한 번 보낸 뒤 연결을 닫는다"},
+        {"key": "B", "label": "바로 닫는다. 클라이언트가 다시 연결한다"}
+      ],
+      "recommend": "A",
+      "recommendReason": "클라이언트가 정상 종료와 장애를 구분할 수 있다",
+      "hold": "shutdown-sse 구현 착수"
+    },
+    {
+      "id": "2",
+      "title": "작업 ci-readme: README를 어떤 언어로 쓸지",
+      "background": "CI 배지와 실행 방법을 README에 더한다. 지금 README는 한국어다.",
+      "options": [
+        {"key": "A", "label": "한국어만"},
+        {"key": "B", "label": "영어만"},
+        {"key": "C", "label": "한국어 기본, 영문은 별도 파일"}
+      ],
+      "recommend": "A",
+      "recommendReason": "지금 독자가 한국어 사용자이고, 영문은 필요해질 때 더해도 된다",
+      "hold": "ci-readme README 작성"
+    }
+  ]
+}
