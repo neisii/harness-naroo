@@ -49,6 +49,8 @@ The human decides at steps 3 and 6, plus push and merge. Claude does the rest, b
 5. **Reversibility check, veto-first.** For a new situation no rule covers, "do it alone, or stop and ask?" is decided from four criteria: can it be undone · is the request clear · scope · is it a business rule a human must decide. Three of them (undoable, clear, business rule) carry a veto: if any one trips, the agent stops and asks, no matter how the others look.
 6. **Use the platform, don't rebuild it.** The harness sets the overall flow; it does not try to control everything. Where Claude Code already has a setting (permissions, commit attribution, background sessions), the harness uses it.
 
+The makers of Claude Code recommend a similar way of working in an [official usage guide](https://claude.dev/blog/getting-the-most-out-of-opus-5-5/): define what "done" means and hand the task over, have it stop before destructive actions, and check the result. This harness fixes those recommendations in rules, gates, and records so an SI team keeps them every time, and adds two things: checking the combined whole rather than one task, and tying several sessions together under human decisions.
+
 ## Two ways to use it
 
 | | One session (since 0.1) | Several sessions (0.2.0, optional) |
