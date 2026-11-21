@@ -1,3 +1,5 @@
+# Copyright 2026 Baek Ga-hui (neisii) - https://github.com/neisii/harness-naroo
+# SPDX-License-Identifier: Apache-2.0
 """
 Cross-platform OS notification utility.
 Displays native notifications on Windows, macOS, and Linux.

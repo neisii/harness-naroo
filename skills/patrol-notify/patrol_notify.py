@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# Copyright 2026 Baek Ga-hui (neisii) - https://github.com/neisii/harness-naroo
+# SPDX-License-Identifier: Apache-2.0
 """patrol-notify — "사람 응답 대기" 항목을 백오프 간격으로 OS 알림(os-notify)으로 알리는 결정론적 스크립트.
 
 상태 JSON(대기 장부 집계 결과)을 --status-json <파일> 또는 stdin 으로 받는다(스키마는 SKILL.md 참고).

@@ -1,3 +1,5 @@
+# Copyright 2026 Baek Ga-hui (neisii) - https://github.com/neisii/harness-naroo
+# SPDX-License-Identifier: Apache-2.0
 """
 qa-inbox.py — QA 대기 장부 조회 (AG-15)
 

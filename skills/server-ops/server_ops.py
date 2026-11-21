@@ -1,3 +1,5 @@
+# Copyright 2026 Baek Ga-hui (neisii) - https://github.com/neisii/harness-naroo
+# SPDX-License-Identifier: Apache-2.0
 """server-ops: Spring Boot + Gradle 서버의 빌드·구동·종료·상태 조회 공용 실행기.
 
 사용:

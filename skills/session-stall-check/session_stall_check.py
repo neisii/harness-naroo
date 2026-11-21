@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# Copyright 2026 Baek Ga-hui (neisii) - https://github.com/neisii/harness-naroo
+# SPDX-License-Identifier: Apache-2.0
 """
 session_stall_check.py — 세션 하나가 지금 어떤 상태인지(특히 사람 입력 대기인지) 즉시 조회하는 읽기 전용 CLI.
 

@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# Copyright 2026 Baek Ga-hui (neisii) - https://github.com/neisii/harness-naroo
+# SPDX-License-Identifier: Apache-2.0
 """
 survey_gen.py — 사람에게 물을 결정을 HTML 설문으로 만들고, 답변을 기록·관리하는 도구.
 

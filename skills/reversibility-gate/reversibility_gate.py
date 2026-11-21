@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# Copyright 2026 Baek Ga-hui (neisii) - https://github.com/neisii/harness-naroo
+# SPDX-License-Identifier: Apache-2.0
 """reversibility_gate — 가역성 분류표(07)의 실행 가능한 라우터 + 판정 근거 기록.
 
 AI가 결정 지점에서 기준 4개를 self-assess하면 A/B/C/D로 길을 정하고,

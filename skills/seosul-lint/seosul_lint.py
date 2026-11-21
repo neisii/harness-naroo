@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# Copyright 2026 Baek Ga-hui (neisii) - https://github.com/neisii/harness-naroo
+# SPDX-License-Identifier: Apache-2.0
 """seosul_lint — 서술 규칙 위반을 찾는 읽기 전용 린터(한국어 글쓰기용).
 
 번역투·과장 용어, 이모지, 2인칭('당신')을 Markdown에서 찾아 보고한다.

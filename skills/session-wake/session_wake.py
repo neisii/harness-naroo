@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# Copyright 2026 Baek Ga-hui (neisii) - https://github.com/neisii/harness-naroo
+# SPDX-License-Identifier: Apache-2.0
 """session-wake — 이름으로 bg 세션을 복사본 없이 깨운다.
 
 사용법: python session_wake.py <세션명> [--dry-run]
