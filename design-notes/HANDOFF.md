@@ -26,7 +26,7 @@
 - **초심자 가이드북(`docs/guide/`):** 상황 지도 · 6장(테스트 없이 통과) · 7장(묻지 않고 커밋·삭제) · 9장(합치니 깨짐) · 10장(승인이 몰림) · 용어집(25항목). 장 맨 위 "이 장의 낯선 말" 줄이 용어집으로 이어진다.
 - **공개 가이드(`docs/`):** `환경값-정의.md`(06 환경값 치환, H 커밋 귀속·I 대화 언어) · `오케스트레이션-구성.md`(10 소규모 모드 세팅, 선택형 좁은 위임 포함) · `위임기록-템플릿.md`(문서 10 부록 A를 공개본으로 옮기고 좁은 위임 절 추가) · `overview-en.md`(영문 개요, Small mode 절 추가)
 - **방법 문서:** `쉬운-글쓰기-기준.md`(how-to) · `번역투-교정사전.md`(T2 사전 33개, 스킬 배포본 `skills/seosul-lint/`도 2026-11-20 동기화. 항목 추가는 사용자에게 묻지 않고 통보만 — 메모리) · `논제-backlog.md`(T1~T6)
-- `diagrams/` — Mermaid SVG 9개(+quickstart 흐름도·도그푸딩 루프). `tools/seosul_linter.py` — 서술 린터(구현은 `skills/seosul-lint/`로 승격, 여긴 shim).
+- 다이어그램은 각 문서 안의 Mermaid 블록(따로 저장한 SVG는 쓰이지 않아 2026-11-22 지움, 공식 디렉터리가 SVG를 받지 않음). `tools/seosul_linter.py` — 서술 린터(구현은 `skills/seosul-lint/`로 승격, 여긴 shim).
 - **공개 얼굴(레포 루트):** `README.md`(한국어 기본, 첫 화면=한 방) · `README.en.md`(영문) · `QUICKSTART.md`(5분 입구, 한국어) · `QUICKSTART.en.md`(영문, 2026-11-21 분리) · `examples/reversibility_demo.py`(07 실행 조각) · `NOTICE.md`(익명화·shebang 없음·개밥 기록 출처 고지).
 
 ## 4. 서술 규칙 (글 쓸 때 필수 — 정본 08)
