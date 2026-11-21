@@ -217,6 +217,6 @@ python3 skills/seosul-lint/seosul_lint.py <문서 폴더>
 
 ## 라이선스
 
-Apache-2.0 © 2026 neisii (Baek Ga-hui) — [`LICENSE`](./LICENSE), 저작자 표시는 [`NOTICE`](./NOTICE) 참고. v0.1.2까지는 MIT로 배포했습니다.
+Apache-2.0 © 2026 neisii (Baek Ga-hui) — [`LICENSE`](./LICENSE), 저작자 표시는 [`NOTICE`](./NOTICE) 참고. 0.1.x(0.1.3까지)는 MIT로 배포했습니다.
 
 만든 사람: [github.com/neisii](https://github.com/neisii). [Claude Code](https://claude.com/claude-code)로 만들었습니다. 이슈와 개선 제안 환영합니다.

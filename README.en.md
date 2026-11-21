@@ -217,6 +217,6 @@ The harness was checked by being used directly on real delivery work, on its own
 
 ## License
 
-Apache-2.0 © 2026 neisii (Baek Ga-hui) — see [`LICENSE`](./LICENSE) and the attribution in [`NOTICE`](./NOTICE). Versions up to v0.1.2 were released under MIT.
+Apache-2.0 © 2026 neisii (Baek Ga-hui) — see [`LICENSE`](./LICENSE) and the attribution in [`NOTICE`](./NOTICE). Versions 0.1.x (up to 0.1.3) were released under MIT.
 
 Made by [github.com/neisii](https://github.com/neisii), with [Claude Code](https://claude.com/claude-code). Issues and suggestions welcome.
