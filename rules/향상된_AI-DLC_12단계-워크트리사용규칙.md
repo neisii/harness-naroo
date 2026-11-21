@@ -32,7 +32,7 @@ WT-01 면제 대상을 제외하고, 어떤 작업이든(화면 구현에 국한
 1. `<팀구분>/main`을 기준으로 `<팀구분>/<이름약자>_dev/<작업ID>` 작업 브랜치를 새로 만든다(이름 형식은 7단계 BR-01).
 2. 그 브랜치로, 세션이 바라보는 프로젝트 하위 `.claude\worktrees`에 워크트리를 만든다(WT-05).
 3. checkout 전에 sparse-checkout으로 `docs/`를 제외한다(non-cone 패턴: `/*` + `!/docs/`). `.metrics/`는 제외하지 않는다(WT-13).
-4. 워크트리의 `.claude\settings.local.json`에 환경변수 `PRJ_METRICS_DIR={본인 경로}\.prj-ai-metrics\<프로젝트>`를 기록한다(원장을 저장소 밖에 기록해 자동커밋을 막는다).
+4. (메트릭 원장을 쓰는 팀만) 워크트리의 `.claude\settings.local.json`에 환경변수 `PRJ_METRICS_DIR={본인 경로}\.prj-ai-metrics\<프로젝트>`를 기록한다(원장을 저장소 밖에 기록해 자동커밋을 막는다). 원장을 쓰지 않는 팀은 `docs/환경값-정의.md` A에 "메트릭 원장 없음"으로 선언하고 이 단계를 건너뛴다.
 5. 이후 조사·청사진 작성·구현은 모두 이 워크트리 안에서 한다.
 
 ### WT-03 · 워크트리는 스크립트로만 만든다
@@ -224,7 +224,7 @@ WT-13를 마치고 **사람이 삭제를 확인한 뒤**(또는 qa-master가 승
 
 | 시점 | 확인할 것 | 어긋나면 |
 |---|---|---|
-| ① 워크트리 생성 직후 | `worktree` 스킬로 만들었는가(수동 `git worktree add` 금지), `git sparse-checkout list`에 `!/docs/`, 워크트리 `.claude\settings.local.json`에 `PRJ_METRICS_DIR`, **세션 셸에서 실제 값 출력**(PowerShell `$env:PRJ_METRICS_DIR`, bash `echo $PRJ_METRICS_DIR`)이 `{본인 경로}\.prj-ai-metrics\<프로젝트>`인지, `git branch -vv`에 추적 정보 없음 | 작업을 시작하지 않고 보고 |
+| ① 워크트리 생성 직후 | `worktree` 스킬로 만들었는가(수동 `git worktree add` 금지), `git sparse-checkout list`에 `!/docs/`, `git branch -vv`에 추적 정보 없음. (메트릭 원장을 쓰는 팀만) 워크트리 `.claude\settings.local.json`에 `PRJ_METRICS_DIR`, **세션 셸에서 실제 값 출력**(PowerShell `$env:PRJ_METRICS_DIR`, bash `echo $PRJ_METRICS_DIR`)이 `{본인 경로}\.prj-ai-metrics\<프로젝트>`인지. 환경값 A에 "메트릭 원장 없음"으로 선언한 팀은 이 값이 비어 있어도 어긋남이 아니다 | 작업을 시작하지 않고 보고 |
 | ② 산출물 쓰기 직전 | 쓰려는 경로가 원본 `<프로젝트>\docs\...`인가, 경로에 `.claude\worktrees`가 들어 있지 않은가 | 쓰지 않고 중단 후 보고 |
 | ③ 커밋 계획 제시 전 | 스테이징 후보에 `docs/`가 섞이지 않았는가, WT-13 일괄 커밋이 아닌 일반 커밋에 `.metrics/`가 섞이지 않았는가 | 계획에서 걸러내고 걸러낸 사실을 계획에 명시 |
 | ④ 작업 중 이상 신호 | 워크트리 안에 `.metrics/` 변경이나 `chore(metrics)` 자동커밋이 새로 생기면 env 누락 신호 | 임의로 원복하지 않고 보고 |
@@ -236,7 +236,7 @@ WT-13를 마치고 **사람이 삭제를 확인한 뒤**(또는 qa-master가 승
 
 - [ ] WT-01 작업이 면제 대상인지 판단했고, 애매하면 묻지 않고 워크트리를 만들었는가?
 - [ ] WT-02 화면 구현이 아닌 작업도 포함해, 시작 전에 `<팀구분>/main` 기준으로 새 브랜치를 만들고 그 브랜치로 만든 워크트리 안에서 작업했는가?
-- [ ] WT-03 `worktree` 스킬로 만들었는가(수동 `git worktree add` 없이)? 생성 직후 세션 셸에서 `PRJ_METRICS_DIR` 실제 값을 출력해 확인했는가(WT-16 ①)?
+- [ ] WT-03 `worktree` 스킬로 만들었는가(수동 `git worktree add` 없이)? (메트릭 원장을 쓰는 팀만) 생성 직후 세션 셸에서 `PRJ_METRICS_DIR` 실제 값을 출력해 확인했는가(WT-16 ①)?
 - [ ] WT-04 새 브랜치를 `-t` 없이 만들고 `git branch -vv`로 추적 정보가 없음을 확인했는가?
 - [ ] WT-05 프로젝트 하위 `.claude\worktrees`에 만들었는가?
 - [ ] WT-06 워크트리명이 `{작업ID 압축}-{작업명}` 규칙을 따랐는가?
