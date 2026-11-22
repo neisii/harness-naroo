@@ -14,7 +14,7 @@ AI-DLC (AI-Driven Development Lifecycle) is a development method where AI does t
 
 ## Why it exists
 
-The harness was used on a real next-generation public-procurement build (2026) and is published here, anonymized. That project split screen development across several AI sessions with different roles, and ran into this:
+The harness was used on a real next-generation quasi-public commerce build (2026) and is published here, anonymized. That project split screen development across several AI sessions with different roles, and ran into this:
 
 - Tasks the AI reported as "done, tests pass" broke once merged with other tasks.
 - The AI committed or deleted files without asking.

@@ -17,7 +17,7 @@ On a real system-integration (SI) delivery, a naive "let the AI code" approach f
 AI-DLC (AI-Driven Development Lifecycle) is a development method where AI does the planning, design, code,
 and tests while people review and approve. This repository is a Claude Code harness for that method: it
 formalizes, on top of that flow, the rules that were built up step by step to address each of these on a
-4-month next-gen public-procurement build. The guiding principle: **treat the AI like a disciplined teammate** — clear
+4-month next-gen quasi-public commerce build. The guiding principle: **treat the AI like a disciplined teammate** — clear
 boundaries, an explicit approval gate, one canonical source of truth, and *verified means actually verified.*
 
 ## The pipeline

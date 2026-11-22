@@ -24,7 +24,7 @@ the same placeholder everywhere:
 
 ## What was intentionally kept / 의도적으로 유지한 것
 
-- **Public-procurement business terms** (수요기관, 공급업체, 납품요청, 검수, 견적요청, 인지세 …) — they convey
+- **Business terms of the quasi-public commerce domain** (수요기관, 공급업체, 납품요청, 검수, 견적요청, 인지세 …) — they convey
   the methodology and carry no secret.
 - **The author's own identifiers**: `백가희`, `ghbaek`, `neisii`.
 - **Harness design terms** (role sessions such as `qa-master`, rule IDs such as `GL-01`, `AG-15`) — these are
